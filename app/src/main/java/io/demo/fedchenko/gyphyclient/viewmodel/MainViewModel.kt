@@ -4,21 +4,74 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import io.demo.fedchenko.gyphyclient.model.GifModel
+import io.demo.fedchenko.gyphyclient.repository.GifProvider
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(application: Application, var gifProvider: GifProvider) :
+    AndroidViewModel(application) {
 
-    var click : MutableLiveData<Boolean> = MutableLiveData()
-    var gifModels : MutableLiveData<MutableList<GifModel>> = MutableLiveData()
-
-    init {
-        click.value = false
-        gifModels.value = emptyList<GifModel>().toMutableList()
+    enum class State {
+        NORMAL, REQUEST_FAILED
     }
 
-    fun onClick() {
-        var url = "https://media0.giphy.com/media/NjevnbNiUmeLm/giphy.gif?cid=bbea74ec8e969a46774116bdf5e8e61c7d206c5421500431&rid=giphy.gif"
-        gifModels.value = gifModels.value.apply {
-            this!!.add(GifModel("r",url))
-        }
+    var loading: MutableLiveData<Boolean> = MutableLiveData()
+    var gifModels: MutableLiveData<MutableList<GifModel>> = MutableLiveData()
+    var state: MutableLiveData<State> = MutableLiveData()
+
+    private var compositeDisposable = CompositeDisposable()
+
+    init {
+        loading.value = false
+        gifModels.value = emptyList<GifModel>().toMutableList()
+        state.value = State.NORMAL
+        trending()
+    }
+
+    fun search(term: String) {
+        if (term.trim() == "")
+            return
+        /*compositeDisposable.clear()
+        loading.value = true
+        compositeDisposable.add(
+            gifProvider.getByTerm(term.trim())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        loading.value = false
+                        gifModels.value = it.toMutableList()
+                    }
+                    , {
+                        loading.value = false
+                        state.value = State.REQUEST_FAILED
+                    }
+                )
+        )*/
+        gifModels.value = emptyList<GifModel>().toMutableList()
+
+    }
+
+    fun trending() {
+        compositeDisposable.clear()
+        loading.value = true
+        compositeDisposable.add(
+            gifProvider.getTrendingGifs()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        loading.value = false
+                        gifModels.value = it.toMutableList()
+                    }
+                    , {
+                        loading.value = false
+                        state.value = State.REQUEST_FAILED
+                    }
+                )
+        )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        compositeDisposable.dispose()
     }
 }

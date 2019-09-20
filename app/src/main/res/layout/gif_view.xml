@@ -8,10 +8,11 @@
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:cardElevation="2dp"
-        app:cardCornerRadius="4dp">
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="2dp">
 
         <ImageView
             android:id="@+id/imageView"

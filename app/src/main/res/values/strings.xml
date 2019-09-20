@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Gyphy Client</string>
+    <string name="search">search</string>
 </resources>

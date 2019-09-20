@@ -6,4 +6,5 @@ import kotlinx.android.synthetic.main.gif_view.view.*
 
 class GifViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val imageView = itemView.imageView
+    val cardView = itemView.cardView
 }
