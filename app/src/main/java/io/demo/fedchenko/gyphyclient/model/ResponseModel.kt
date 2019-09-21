@@ -18,6 +18,8 @@ class GifNotParsedModel() {
 class Images(){
     @SerializedName("original")
     var gifInfo: GifInfo = GifInfo()
+    @SerializedName("original_still")
+    var gifStill: GifStill = GifStill()
 }
 
 class GifInfo(){
@@ -27,6 +29,11 @@ class GifInfo(){
     @SerializedName("height")
     var height: Int = 0
 
+    @SerializedName("url")
+    var url: String = ""
+}
+
+class GifStill(){
     @SerializedName("url")
     var url: String = ""
 }

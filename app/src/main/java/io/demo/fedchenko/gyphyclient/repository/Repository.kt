@@ -8,8 +8,8 @@ import io.reactivex.Observable
 class Repository : GifProvider {
     private val gyphyAPI: GyphyAPI = RetrofitClient.instance.create(GyphyAPI::class.java)
 
-    override fun getByTerm(term: String, count: Int, ofset: Int): Observable<List<GifModel>> {
-        return gyphyAPI.fingGifsByTerm(term, count, ofset)
+    override fun getByTerm(term: String, count: Int, offset: Int): Observable<List<GifModel>> {
+        return gyphyAPI.fingGifsByTerm(term, count, offset)
             .map { it.GifModels }
             .map {
                 val gifList = emptyList<GifModel>().toMutableList()
@@ -18,7 +18,8 @@ class Repository : GifProvider {
                         notParsedModel.title,
                         notParsedModel.images.gifInfo.width,
                         notParsedModel.images.gifInfo.height,
-                        notParsedModel.images.gifInfo.url
+                        notParsedModel.images.gifInfo.url,
+                        notParsedModel.images.gifStill.url
                     )
                     gifList.add(gifModel)
                 }
@@ -26,8 +27,8 @@ class Repository : GifProvider {
             }
     }
 
-    override fun getTrendingGifs(count: Int, ofset: Int): Observable<List<GifModel>> {
-        return gyphyAPI.getTrendingGifs(count, ofset)
+    override fun getTrendingGifs(count: Int, offset: Int): Observable<List<GifModel>> {
+        return gyphyAPI.getTrendingGifs(count, offset)
             .map { it.GifModels }
             .map {
                 val gifList = emptyList<GifModel>().toMutableList()
@@ -36,7 +37,8 @@ class Repository : GifProvider {
                         notParsedModel.title,
                         notParsedModel.images.gifInfo.width,
                         notParsedModel.images.gifInfo.height,
-                        notParsedModel.images.gifInfo.url
+                        notParsedModel.images.gifInfo.url,
+                        notParsedModel.images.gifStill.url
                     )
                     gifList.add(gifModel)
                 }

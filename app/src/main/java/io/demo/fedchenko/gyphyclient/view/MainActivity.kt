@@ -6,13 +6,16 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.gyphyclient.R
 import io.demo.fedchenko.gyphyclient.adapter.GifListAdapter
+import io.demo.fedchenko.gyphyclient.model.GifModel
 import io.demo.fedchenko.gyphyclient.repository.Repository
 import io.demo.fedchenko.gyphyclient.viewmodel.MainViewModel
 import io.demo.fedchenko.gyphyclient.viewmodel.MainViewModelFactory
@@ -22,6 +25,8 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var mainViewModel: MainViewModel
     lateinit var adapter: GifListAdapter
+    lateinit var layoutManager: StaggeredGridLayoutManager
+    private var previousList = listOf(GifModel("", 0, 0, "", ""))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,24 +48,47 @@ class MainActivity : AppCompatActivity() {
         }
 
         trendingImage.setOnClickListener {
-            mainViewModel.trending()
+            hideKeyboard()
+            mainViewModel.getTrending()
         }
-
-        adapter = GifListAdapter(this)
-        adapter.gifModels = mainViewModel.gifModels
 
         val spans =
             if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 3
-        recycler.layoutManager = StaggeredGridLayoutManager(spans, LinearLayoutManager.VERTICAL)
+        layoutManager = StaggeredGridLayoutManager(spans, LinearLayoutManager.VERTICAL)
+        recycler.layoutManager = layoutManager
+
+        adapter = GifListAdapter(applicationContext)
+        adapter.gifModels = mainViewModel.gifModels
         recycler.adapter = adapter
 
-        mainViewModel.gifModels.observe(this, Observer { adapter.notifyDataSetChanged() })
+        mainViewModel.gifModels.observe(this, Observer {
+            if (it.isEmpty() || previousList.isEmpty() || it[0] != previousList[0]) {
+                adapter.notifyDataSetChanged()
+                previousList = it
+            }
+        })
 
+        recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val count = layoutManager.itemCount - 1
+                val lastVisible = layoutManager.findLastVisibleItemPositions(IntArray(3))
+                lastVisible.forEach {
+                    if (it == count)
+                        mainViewModel.getMoreGifs()
+                }
+            }
+        })
 
+        mainViewModel.state.observe(this, Observer {
+            if (it == MainViewModel.State.REQUEST_FAILED)
+                Toast.makeText(this, R.string.request_failed, Toast.LENGTH_LONG).show()
+        })
     }
 
     private fun hideKeyboard() {
         val view = currentFocus
+        view.clearFocus()
         if (view != null)
             (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
                 view.windowToken,
