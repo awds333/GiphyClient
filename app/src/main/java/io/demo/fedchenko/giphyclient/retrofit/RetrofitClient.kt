@@ -1,4 +1,4 @@
-package io.demo.fedchenko.gyphyclient.retrofit
+package io.demo.fedchenko.giphyclient.retrofit
 
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Retrofit

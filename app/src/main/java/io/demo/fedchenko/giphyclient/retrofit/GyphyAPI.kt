@@ -1,6 +1,6 @@
-package io.demo.fedchenko.gyphyclient.retrofit
+package io.demo.fedchenko.giphyclient.retrofit
 
-import io.demo.fedchenko.gyphyclient.model.ResponseModel
+import io.demo.fedchenko.giphyclient.model.ResponseModel
 import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query

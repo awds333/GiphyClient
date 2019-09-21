@@ -1,12 +1,12 @@
-package io.demo.fedchenko.gyphyclient.viewmodel
+package io.demo.fedchenko.giphyclient.viewmodel
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
-import io.demo.fedchenko.gyphyclient.model.GifModel
-import io.demo.fedchenko.gyphyclient.repository.GifProvider
+import io.demo.fedchenko.giphyclient.model.GifModel
+import io.demo.fedchenko.giphyclient.repository.GifProvider
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 

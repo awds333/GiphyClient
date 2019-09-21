@@ -1,4 +1,4 @@
-package io.demo.fedchenko.gyphyclient.adapter
+package io.demo.fedchenko.giphyclient.adapter
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

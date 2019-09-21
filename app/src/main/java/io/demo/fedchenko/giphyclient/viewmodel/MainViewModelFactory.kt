@@ -1,9 +1,9 @@
-package io.demo.fedchenko.gyphyclient.viewmodel
+package io.demo.fedchenko.giphyclient.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import io.demo.fedchenko.gyphyclient.repository.GifProvider
+import io.demo.fedchenko.giphyclient.repository.GifProvider
 
 class MainViewModelFactory(
     private var application: Application,

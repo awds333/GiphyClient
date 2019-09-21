@@ -1,4 +1,4 @@
-package io.demo.fedchenko.gyphyclient.model
+package io.demo.fedchenko.giphyclient.model
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,8 +1,8 @@
-package io.demo.fedchenko.gyphyclient.repository
+package io.demo.fedchenko.giphyclient.repository
 
-import io.demo.fedchenko.gyphyclient.model.GifModel
-import io.demo.fedchenko.gyphyclient.retrofit.GyphyAPI
-import io.demo.fedchenko.gyphyclient.retrofit.RetrofitClient
+import io.demo.fedchenko.giphyclient.model.GifModel
+import io.demo.fedchenko.giphyclient.retrofit.GyphyAPI
+import io.demo.fedchenko.giphyclient.retrofit.RetrofitClient
 import io.reactivex.Observable
 
 class Repository : GifProvider {

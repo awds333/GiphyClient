@@ -1,7 +1,6 @@
-package io.demo.fedchenko.gyphyclient.repository
+package io.demo.fedchenko.giphyclient.repository
 
-import io.demo.fedchenko.gyphyclient.model.GifModel
-import io.demo.fedchenko.gyphyclient.model.GifNotParsedModel
+import io.demo.fedchenko.giphyclient.model.GifModel
 import io.reactivex.Observable
 
 interface GifProvider {

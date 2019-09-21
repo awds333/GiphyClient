@@ -1,4 +1,4 @@
-package io.demo.fedchenko.gyphyclient.view
+package io.demo.fedchenko.giphyclient.view
 
 import android.content.Context
 import android.content.res.Configuration
@@ -13,12 +13,12 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import io.demo.fedchenko.gyphyclient.R
-import io.demo.fedchenko.gyphyclient.adapter.GifListAdapter
-import io.demo.fedchenko.gyphyclient.model.GifModel
-import io.demo.fedchenko.gyphyclient.repository.Repository
-import io.demo.fedchenko.gyphyclient.viewmodel.MainViewModel
-import io.demo.fedchenko.gyphyclient.viewmodel.MainViewModelFactory
+import io.demo.fedchenko.giphyclient.R
+import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
+import io.demo.fedchenko.giphyclient.model.GifModel
+import io.demo.fedchenko.giphyclient.repository.Repository
+import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
+import io.demo.fedchenko.giphyclient.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {

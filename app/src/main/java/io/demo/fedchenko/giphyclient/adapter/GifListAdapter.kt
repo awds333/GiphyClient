@@ -1,4 +1,4 @@
-package io.demo.fedchenko.gyphyclient.adapter
+package io.demo.fedchenko.giphyclient.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import io.demo.fedchenko.gyphyclient.R
-import io.demo.fedchenko.gyphyclient.model.GifModel
+import io.demo.fedchenko.giphyclient.R
+import io.demo.fedchenko.giphyclient.model.GifModel
 
 class GifListAdapter(var context: Context) : RecyclerView.Adapter<GifViewHolder>() {
     var gifModels: MutableLiveData<MutableList<GifModel>> = MutableLiveData()

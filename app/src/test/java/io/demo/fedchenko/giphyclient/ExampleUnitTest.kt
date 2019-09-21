@@ -1,4 +1,4 @@
-package io.demo.fedchenko.gyphyclient
+package io.demo.fedchenko.giphyclient
 
 import org.junit.Test
 
