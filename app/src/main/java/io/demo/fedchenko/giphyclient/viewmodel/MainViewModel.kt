@@ -3,6 +3,7 @@ package io.demo.fedchenko.giphyclient.viewmodel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import io.demo.fedchenko.giphyclient.model.GifModel
@@ -17,14 +18,13 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
         NORMAL, REQUEST_FAILED
     }
 
-    var loading: MutableLiveData<Boolean> = MutableLiveData()
-    var gifModels: MutableLiveData<MutableList<GifModel>> = MutableLiveData()
-    var state: MutableLiveData<State> = MutableLiveData()
+    private val loading: MutableLiveData<Boolean> = MutableLiveData()
+    private val gifModels: MutableLiveData<List<GifModel>> = MutableLiveData()
+    private val state: MutableLiveData<State> = MutableLiveData()
 
     private var trending = true
     private var lustTerm = ""
-    private var compositeDisposable = CompositeDisposable()
-    private var app: Application = application
+    private val compositeDisposable = CompositeDisposable()
 
     init {
         loading.value = false
@@ -47,7 +47,6 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
                         trending = false
                         loading.value = false
                         gifModels.value = it.toMutableList()
-                        clearCache()
                     }
                     , {
                         loading.value = false
@@ -71,7 +70,6 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
                         trending = true
                         loading.value = false
                         gifModels.value = it.toMutableList()
-                        clearCache()
                     }
                     , {
                         loading.value = false
@@ -95,7 +93,7 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
             .subscribe(
                 { newModels: List<GifModel> ->
                     loading.value = false
-                    gifModels.value = gifModels.value.apply { this!!.addAll(newModels) }
+                    gifModels.value = gifModels.value!!.plus(newModels)
                 }
                 , {
                     loading.value = false
@@ -106,6 +104,18 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
         )
     }
 
+    fun getLoading():LiveData<Boolean>{
+        return loading
+    }
+
+    fun getGifModels():LiveData<List<GifModel>>{
+        return gifModels
+    }
+
+    fun getState():LiveData<State>{
+        return state
+    }
+
     private fun performException(){
         state.value = State.REQUEST_FAILED
         state.value = State.NORMAL
@@ -114,13 +124,5 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.dispose()
-        clearCache()
-    }
-
-
-    private fun clearCache() {
-        Thread(Runnable {
-            Glide.get(app).clearDiskCache()
-        }).start()
     }
 }

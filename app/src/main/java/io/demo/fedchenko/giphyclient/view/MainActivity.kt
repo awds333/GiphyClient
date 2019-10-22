@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
     lateinit var adapter: GifListAdapter
     lateinit var layoutManager: StaggeredGridLayoutManager
-    private var previousList = listOf(GifModel("", 0, 0, "", ""))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel = ViewModelProviders.of(this, MainViewModelFactory(application, Repository()))
             .get(MainViewModel::class.java)
 
-        mainViewModel.loading.observe(
+        mainViewModel.getLoading().observe(
             this,
             Observer { progressBar.visibility = if (it) View.VISIBLE else View.GONE })
         searchField.setOnEditorActionListener { _, actionId, _ ->
@@ -57,16 +56,8 @@ class MainActivity : AppCompatActivity() {
         layoutManager = StaggeredGridLayoutManager(spans, LinearLayoutManager.VERTICAL)
         recycler.layoutManager = layoutManager
 
-        adapter = GifListAdapter(applicationContext)
-        adapter.gifModels = mainViewModel.gifModels
+        adapter = GifListAdapter(this,this, mainViewModel.getGifModels())
         recycler.adapter = adapter
-
-        mainViewModel.gifModels.observe(this, Observer {
-            if (it.isEmpty() || previousList.isEmpty() || it[0] != previousList[0]) {
-                adapter.notifyDataSetChanged()
-                previousList = it
-            }
-        })
 
         recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -80,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        mainViewModel.state.observe(this, Observer {
+        mainViewModel.getState().observe(this, Observer {
             if (it == MainViewModel.State.REQUEST_FAILED)
                 Toast.makeText(this, R.string.request_failed, Toast.LENGTH_LONG).show()
         })
@@ -88,11 +79,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun hideKeyboard() {
         val view = currentFocus
-        view.clearFocus()
-        if (view != null)
+        if (view != null) {
+            view.clearFocus()
             (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
                 view.windowToken,
                 0
             )
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }
