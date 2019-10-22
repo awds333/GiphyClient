@@ -5,9 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
@@ -15,32 +14,38 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.model.GifModel
 
-class GifListAdapter(private val context: Context, lifecycleOwner: LifecycleOwner, private val gifModels: LiveData<List<GifModel>>) :
+class GifListAdapter(private val context: Context) :
     RecyclerView.Adapter<GifViewHolder>() {
 
-    private var latestElement: GifModel? = null
+    private var gifModels: List<GifModel> = emptyList()
 
-    init {
-        gifModels.observe(lifecycleOwner, Observer {
-            if ((it.isEmpty() && latestElement != null) || (it.isNotEmpty() && latestElement == null)) {
-                notifyDataSetChanged()
-                latestElement = if (it.isEmpty()) null else it[0]
-                return@Observer
+    val gifModelsObserver = Observer<List<GifModel>> {
+        val oldModels = gifModels
+        gifModels = it
+        val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return oldModels[oldItemPosition].url == gifModels[newItemPosition].url
             }
-            if (latestElement != null) {
-                if (it[0] != latestElement) {
-                    notifyDataSetChanged()
-                    latestElement = it[0]
-                }
+
+            override fun getOldListSize(): Int {
+                return oldModels.size
+            }
+
+            override fun getNewListSize(): Int {
+                return gifModels.size
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return oldModels[oldItemPosition] == gifModels[newItemPosition]
             }
         })
+        diff.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GifViewHolder {
         val gifView = LayoutInflater.from(parent.context)
             .inflate(R.layout.gif_view, parent, false)
 
-        //gifView.measure(View.MeasureSpec.EXACTLY,View.MeasureSpec.UNSPECIFIED)
         return GifViewHolder(gifView,
             CircularProgressDrawable(context).apply {
                 strokeWidth = 5f
@@ -50,24 +55,23 @@ class GifListAdapter(private val context: Context, lifecycleOwner: LifecycleOwne
     }
 
     override fun getItemCount(): Int {
-        return gifModels.value!!.size
+        return gifModels.size
     }
 
     override fun onBindViewHolder(holder: GifViewHolder, position: Int) {
+        val model = gifModels[position]
         Glide.with(context)
-            .load(gifModels.value!![position].url)
+            .load(model.url)
             .placeholder(holder.progressDrawable)
             .error(android.R.drawable.ic_delete)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .into(holder.imageView)
-        holder.imageView.layoutParams = FrameLayout.LayoutParams(
-            gifModels.value!![position].width,
-            gifModels.value!![position].height
-        )
         holder.imageView.post {
             val view = (holder.imageView.parent as View)
-            holder.imageView.layoutParams = FrameLayout.LayoutParams(view.width,
-                view.width * gifModels.value!![position].height / gifModels.value!![position].width)
+            holder.imageView.layoutParams = FrameLayout.LayoutParams(
+                view.width,
+                view.width * model.height / model.width
+            )
         }
     }
 

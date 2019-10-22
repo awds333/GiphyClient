@@ -8,7 +8,6 @@ class ResponseModel {
 }
 
 class GifNotParsedModel {
-
     @SerializedName("images")
     var images: Images = Images()
 }

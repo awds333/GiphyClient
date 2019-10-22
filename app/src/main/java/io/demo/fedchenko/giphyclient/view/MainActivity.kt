@@ -16,26 +16,34 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.repository.Repository
+import io.demo.fedchenko.giphyclient.viewmodel.ExceptionListener
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var mainViewModel: MainViewModel
-    lateinit var adapter: GifListAdapter
-    lateinit var layoutManager: StaggeredGridLayoutManager
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var adapter: GifListAdapter
+    private lateinit var layoutManager: StaggeredGridLayoutManager
+    private val exceptionListener = object : ExceptionListener {
+        override fun handleException() {
+            Toast.makeText(this@MainActivity, R.string.request_failed, Toast.LENGTH_LONG).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mainViewModel = ViewModelProviders.of(this, MainViewModelFactory(application, Repository()))
-            .get(MainViewModel::class.java)
+        mainViewModel =
+            ViewModelProviders.of(this, MainViewModelFactory(application, Repository()))
+                .get(MainViewModel::class.java)
 
-        mainViewModel.getLoading().observe(
+        mainViewModel.observeIsLoading(
             this,
             Observer { progressBar.visibility = if (it) View.VISIBLE else View.GONE })
+
         searchField.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 mainViewModel.search(searchField.text.toString())
@@ -49,13 +57,14 @@ class MainActivity : AppCompatActivity() {
             hideKeyboard()
             mainViewModel.getTrending()
         }
-
-        val spans =
-            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 3
-        layoutManager = StaggeredGridLayoutManager(spans, LinearLayoutManager.VERTICAL)
+        layoutManager = StaggeredGridLayoutManager(
+            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 3,
+            LinearLayoutManager.VERTICAL
+        )
         recycler.layoutManager = layoutManager
 
-        adapter = GifListAdapter(this,this, mainViewModel.getGifModels())
+        adapter = GifListAdapter(this)
+        mainViewModel.observeGifModels(this, adapter.gifModelsObserver)
         recycler.adapter = adapter
 
         recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -69,21 +78,24 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-
-        mainViewModel.getState().observe(this, Observer {
-            if (it == MainViewModel.State.REQUEST_FAILED)
-                Toast.makeText(this, R.string.request_failed, Toast.LENGTH_LONG).show()
-        })
     }
 
     private fun hideKeyboard() {
         val view = currentFocus
-        if (view != null) {
-            view.clearFocus()
-            (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
-                view.windowToken,
-                0
-            )
-        }
+        view?.clearFocus()
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
+            view?.windowToken,
+            0
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mainViewModel.registerExceptionsListener(exceptionListener)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mainViewModel.removeExceptionListener()
     }
 }
