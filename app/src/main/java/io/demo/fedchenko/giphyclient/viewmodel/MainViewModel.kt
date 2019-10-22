@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.bumptech.glide.Glide
 import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.repository.GifProvider
 import io.reactivex.android.schedulers.AndroidSchedulers
