@@ -8,7 +8,7 @@ import retrofit2.http.Query
 interface GyphyAPI {
 
     @GET("search")
-    fun fingGifsByTerm(
+    fun findGifsByTerm(
         @Query("q") term: String, @Query("limit") limit: Int
         , @Query("offset") offset: Int
         , @Query("api_key") key: String = "g0huuU56R74KkSQCYLdzfqCDyr4JmssE"

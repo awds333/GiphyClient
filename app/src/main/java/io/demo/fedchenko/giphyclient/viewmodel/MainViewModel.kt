@@ -17,7 +17,7 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
         NORMAL, REQUEST_FAILED
     }
 
-    private val loading: MutableLiveData<Boolean> = MutableLiveData()
+    private var loading: MutableLiveData<Boolean> = MutableLiveData()
     private val gifModels: MutableLiveData<List<GifModel>> = MutableLiveData()
     private val state: MutableLiveData<State> = MutableLiveData()
 
@@ -103,19 +103,19 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
         )
     }
 
-    fun getLoading():LiveData<Boolean>{
+    fun getLoading(): LiveData<Boolean> {
         return loading
     }
 
-    fun getGifModels():LiveData<List<GifModel>>{
+    fun getGifModels(): LiveData<List<GifModel>> {
         return gifModels
     }
 
-    fun getState():LiveData<State>{
+    fun getState(): LiveData<State> {
         return state
     }
 
-    private fun performException(){
+    private fun performException() {
         state.value = State.REQUEST_FAILED
         state.value = State.NORMAL
     }

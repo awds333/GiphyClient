@@ -4,25 +4,21 @@ import com.google.gson.annotations.SerializedName
 
 class ResponseModel {
     @SerializedName("data")
-    var GifModels: List<GifNotParsedModel> = emptyList()
+    var gifModels: List<GifNotParsedModel> = emptyList()
 }
 
-class GifNotParsedModel() {
-    @SerializedName("title")
-    var title: String = ""
+class GifNotParsedModel {
 
     @SerializedName("images")
     var images: Images = Images()
 }
 
-class Images(){
+class Images {
     @SerializedName("original")
     var gifInfo: GifInfo = GifInfo()
-    @SerializedName("original_still")
-    var gifStill: GifStill = GifStill()
 }
 
-class GifInfo(){
+class GifInfo {
     @SerializedName("width")
     var width: Int = 0
 
@@ -33,7 +29,3 @@ class GifInfo(){
     var url: String = ""
 }
 
-class GifStill(){
-    @SerializedName("url")
-    var url: String = ""
-}

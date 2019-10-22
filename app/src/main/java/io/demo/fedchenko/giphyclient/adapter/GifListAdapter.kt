@@ -65,10 +65,9 @@ class GifListAdapter(private val context: Context, lifecycleOwner: LifecycleOwne
             gifModels.value!![position].height
         )
         holder.imageView.post {
-            holder.imageView.layoutParams = FrameLayout.LayoutParams(
-                (holder.imageView.parent as View).width
-                , (holder.imageView.parent as View).width * gifModels.value!![position].height
-                        / gifModels.value!![position].width)
+            val view = (holder.imageView.parent as View)
+            holder.imageView.layoutParams = FrameLayout.LayoutParams(view.width,
+                view.width * gifModels.value!![position].height / gifModels.value!![position].width)
         }
     }
 

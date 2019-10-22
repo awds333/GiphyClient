@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
-import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.repository.Repository
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModelFactory
@@ -86,9 +85,5 @@ class MainActivity : AppCompatActivity() {
                 0
             )
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 }
