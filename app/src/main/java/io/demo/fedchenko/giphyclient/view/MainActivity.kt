@@ -15,11 +15,15 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
+import io.demo.fedchenko.giphyclient.adapter.GifOnItemClickListener
+import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.repository.Repository
 import io.demo.fedchenko.giphyclient.viewmodel.ExceptionListener
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import androidx.fragment.app.FragmentTransaction
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,13 +32,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var layoutManager: StaggeredGridLayoutManager
     private val exceptionListener = object : ExceptionListener {
         override fun handleException() {
-            Toast.makeText(this@MainActivity, R.string.request_failed, Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this@MainActivity,
+                io.demo.fedchenko.giphyclient.R.string.request_failed,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(io.demo.fedchenko.giphyclient.R.layout.activity_main)
 
         mainViewModel =
             ViewModelProviders.of(this, MainViewModelFactory(application, Repository()))
@@ -64,6 +72,13 @@ class MainActivity : AppCompatActivity() {
         recycler.layoutManager = layoutManager
 
         adapter = GifListAdapter(this)
+        adapter.setOnItemClickListener(object : GifOnItemClickListener {
+            override fun onItemClick(item: GifModel) {
+                val dialog = GifDialogFragment.create(item)
+                dialog.show(supportFragmentManager, "dialog")
+            }
+        })
+
         mainViewModel.observeGifModels(this, adapter.gifModelsObserver)
         recycler.adapter = adapter
 
