@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.adapter.GifOnItemClickListener
 import io.demo.fedchenko.giphyclient.model.GifModel
@@ -22,7 +21,6 @@ import io.demo.fedchenko.giphyclient.viewmodel.ExceptionListener
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
-import androidx.fragment.app.FragmentTransaction
 
 
 class MainActivity : AppCompatActivity() {
