@@ -45,11 +45,12 @@ class GifDialogFragment : DialogFragment() {
         super.onStart()
         Glide.with(context)
             .load(url)
-            .placeholder(CircularProgressDrawable(context!!).apply {
-                strokeWidth = 5f
-                centerRadius = 30f
-                start()
-            })
+            .placeholder(
+                CircularProgressDrawable(context!!).apply {
+                    strokeWidth = 5f
+                    centerRadius = 30f
+                    start()
+                })
             .error(android.R.drawable.ic_delete)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .into(bigGifView)
