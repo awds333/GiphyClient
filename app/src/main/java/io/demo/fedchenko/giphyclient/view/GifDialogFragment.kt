@@ -19,7 +19,7 @@ class GifDialogFragment : DialogFragment() {
             val gifDialog = GifDialogFragment()
             val args = Bundle()
 
-            args.putString("url", model.url)
+            args.putString("url", model.original.url)
 
             gifDialog.arguments = args
             return gifDialog
@@ -32,7 +32,11 @@ class GifDialogFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_FRAME, R.style.AppTheme)
 
-        url = arguments!!.getString("url")
+        arguments?.getString("url")?.also {
+            url = it
+        } ?: return run {
+            dismiss()
+        }
     }
 
     override fun onCreateView(
@@ -52,7 +56,7 @@ class GifDialogFragment : DialogFragment() {
                     start()
                 })
             .error(android.R.drawable.ic_delete)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
             .into(bigGifView)
     }
 

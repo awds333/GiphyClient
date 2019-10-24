@@ -13,8 +13,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.bumptech.glide.Glide
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
-import io.demo.fedchenko.giphyclient.adapter.GifOnItemClickListener
 import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.repository.Repository
 import io.demo.fedchenko.giphyclient.viewmodel.ExceptionListener
@@ -38,10 +38,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private var scrollPosition = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(io.demo.fedchenko.giphyclient.R.layout.activity_main)
-
         mainViewModel =
             ViewModelProviders.of(this, MainViewModelFactory(application, Repository()))
                 .get(MainViewModel::class.java)
@@ -63,22 +64,28 @@ class MainActivity : AppCompatActivity() {
             hideKeyboard()
             mainViewModel.getTrending()
         }
+
+        val spanCount =
+            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 3
         layoutManager = StaggeredGridLayoutManager(
-            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 3,
+            spanCount,
             LinearLayoutManager.VERTICAL
         )
         recycler.layoutManager = layoutManager
 
-        adapter = GifListAdapter(this)
-        adapter.setOnItemClickListener(object : GifOnItemClickListener {
+        adapter = GifListAdapter(this, spanCount)
+        adapter.setOnItemClickListener(object : GifListAdapter.GifOnItemClickListener {
             override fun onItemClick(item: GifModel) {
                 val dialog = GifDialogFragment.create(item)
                 dialog.show(supportFragmentManager, "dialog")
             }
         })
 
-        mainViewModel.observeGifModels(this, adapter.gifModelsObserver)
         recycler.adapter = adapter
+        recycler.post {
+            mainViewModel.observeGifModels(this, adapter.gifModelsObserver)
+            recycler.scrollToPosition(scrollPosition)
+        }
 
         recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -91,6 +98,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        scrollPosition = savedInstanceState!!.getInt("first_visible", 0)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        val firstVisible = layoutManager.findFirstVisibleItemPositions(IntArray(3))
+        if (firstVisible.isNotEmpty())
+            outState!!.putInt("first_visible", firstVisible[0])
+        super.onSaveInstanceState(outState)
     }
 
     private fun hideKeyboard() {

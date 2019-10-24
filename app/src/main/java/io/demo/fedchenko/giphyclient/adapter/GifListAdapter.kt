@@ -3,6 +3,7 @@ package io.demo.fedchenko.giphyclient.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.lifecycle.Observer
@@ -14,12 +15,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import io.demo.fedchenko.giphyclient.model.GifModel
 
 
-interface GifOnItemClickListener {
-    fun onItemClick(item: GifModel)
-}
-
-class GifListAdapter(private val context: Context) :
+class GifListAdapter(private val context: Context, val span: Int) :
     RecyclerView.Adapter<GifViewHolder>() {
+
+    interface GifOnItemClickListener {
+        fun onItemClick(item: GifModel)
+    }
 
     private var gifModels: List<GifModel> = emptyList()
     private var gifOnItemClickListener: GifOnItemClickListener? = null
@@ -29,7 +30,7 @@ class GifListAdapter(private val context: Context) :
         gifModels = it
         val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return oldModels[oldItemPosition].url == gifModels[newItemPosition].url
+                return oldModels[oldItemPosition].original.url == gifModels[newItemPosition].original.url
             }
 
             override fun getOldListSize(): Int {
@@ -47,7 +48,7 @@ class GifListAdapter(private val context: Context) :
         diff.dispatchUpdatesTo(this)
     }
 
-    fun setOnItemClickListener(listener: GifOnItemClickListener){
+    fun setOnItemClickListener(listener: GifOnItemClickListener) {
         gifOnItemClickListener = listener
         notifyDataSetChanged()
     }
@@ -56,12 +57,14 @@ class GifListAdapter(private val context: Context) :
         val gifView = LayoutInflater.from(parent.context)
             .inflate(io.demo.fedchenko.giphyclient.R.layout.gif_view, parent, false)
 
-        return GifViewHolder(gifView,
+        return GifViewHolder(
+            gifView,
             CircularProgressDrawable(context).apply {
                 strokeWidth = 5f
                 centerRadius = 30f
                 start()
-            })
+            }, parent.width / span
+        )
     }
 
     override fun getItemCount(): Int {
@@ -71,23 +74,20 @@ class GifListAdapter(private val context: Context) :
     override fun onBindViewHolder(holder: GifViewHolder, position: Int) {
         val model = gifModels[position]
         Glide.with(context)
-            .load(model.url)
+            .load(model.preview.url)
             .placeholder(holder.progressDrawable)
             .error(android.R.drawable.ic_delete)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
             .into(holder.imageView)
 
         holder.imageView.setOnClickListener {
             gifOnItemClickListener?.onItemClick(model)
         }
 
-        holder.imageView.post {
-            val view = (holder.imageView.parent as View)
-            holder.imageView.layoutParams = FrameLayout.LayoutParams(
-                view.width,
-                view.width * model.height / model.width
-            )
-        }
+        holder.imageView.layoutParams = FrameLayout.LayoutParams(
+            holder.width,
+            holder.width * model.preview.height / model.preview.width
+        )
     }
 
     override fun onViewRecycled(holder: GifViewHolder) {

@@ -15,6 +15,9 @@ class GifNotParsedModel {
 class Images {
     @SerializedName("original")
     var gifInfo: GifInfo = GifInfo()
+
+    @SerializedName("preview_gif")
+    var previewGifInfo: GifInfo = GifInfo()
 }
 
 class GifInfo {
