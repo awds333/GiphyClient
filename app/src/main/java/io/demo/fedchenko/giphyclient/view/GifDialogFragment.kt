@@ -20,8 +20,6 @@ class GifDialogFragment : DialogFragment() {
             val args = Bundle()
 
             args.putString("url", model.url)
-            args.putInt("width", model.width)
-            args.putInt("height", model.height)
 
             gifDialog.arguments = args
             return gifDialog
@@ -29,16 +27,12 @@ class GifDialogFragment : DialogFragment() {
     }
 
     private var url = ""
-    private var height = 0
-    private var width = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_FRAME, R.style.AppTheme)
 
         url = arguments!!.getString("url")
-        height = arguments!!.getInt("width")
-        width = arguments!!.getInt("width")
     }
 
     override fun onCreateView(
