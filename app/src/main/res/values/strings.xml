@@ -2,4 +2,9 @@
     <string name="app_name">Giphy Client</string>
     <string name="search">search</string>
     <string name="request_failed">Request failed!</string>
+    <string name="default_user">anonymous</string>
+    <string name="gif_size">Gif size</string>
+    <string name="date_added">Date added</string>
+    <string name="title">Title</string>
+    <string name="bytes">byte</string>
 </resources>

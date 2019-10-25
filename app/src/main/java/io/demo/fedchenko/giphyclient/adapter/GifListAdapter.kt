@@ -3,15 +3,15 @@ package io.demo.fedchenko.giphyclient.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewAnimationUtils
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.model.GifModel
 
 
@@ -84,7 +84,16 @@ class GifListAdapter(private val context: Context, val span: Int) :
             gifOnItemClickListener?.onItemClick(model)
         }
 
-        holder.imageView.layoutParams = FrameLayout.LayoutParams(
+        holder.titleView.text = model.title
+        holder.widthView.text = model.original.width.toString()
+        holder.heightView.text = model.original.height.toString()
+
+        holder.userNameView.text =
+            if (model.userName.isNotEmpty()) model.userName else context.getText(R.string.default_user)
+
+        holder.titleView.visibility = if (model.title.isNotEmpty()) View.VISIBLE else View.GONE
+
+        holder.imageView.layoutParams = LinearLayout.LayoutParams(
             holder.width,
             holder.width * model.preview.height / model.preview.width
         )

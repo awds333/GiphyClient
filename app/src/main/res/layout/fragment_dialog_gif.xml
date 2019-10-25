@@ -1,19 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minHeight="100dp"
-    android:maxWidth="100dp">
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
 
-
-    <ImageView
-        android:id="@+id/bigGifView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0"
-        android:minHeight="100dp"
-        android:maxWidth="100dp"
-        tools:srcCompat="@tools:sample/avatars" />
-</LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/bigGifView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/userNameView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="8dp"
+            android:background="#07000000"
+            android:elevation="6dp"
+            tools:text="@string/default_user" />
+
+    </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/gifInfoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:elevation="6dp"
+        app:srcCompat="@android:drawable/ic_menu_manage" />
+
+</FrameLayout>

@@ -15,14 +15,22 @@ class Repository : GifProvider {
         val original = GifProperties(
             notParsedModel.images.gifInfo.width,
             notParsedModel.images.gifInfo.height,
-            notParsedModel.images.gifInfo.url
+            notParsedModel.images.gifInfo.url,
+            notParsedModel.images.gifInfo.size
         )
         val preview = if (notParsedModel.images.previewGifInfo.url.isNotEmpty()) GifProperties(
             notParsedModel.images.previewGifInfo.width,
             notParsedModel.images.previewGifInfo.height,
-            notParsedModel.images.previewGifInfo.url
+            notParsedModel.images.previewGifInfo.url,
+            notParsedModel.images.previewGifInfo.size
         ) else original
-        return GifModel(original, preview)
+        return GifModel(
+            original,
+            preview,
+            notParsedModel.user.name,
+            notParsedModel.title,
+            notParsedModel.importDateTime
+        )
     }
 
     override fun getByTerm(term: String, count: Int, offset: Int): Observable<List<GifModel>> {

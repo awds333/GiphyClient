@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.fragment.app.DialogFragment
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.gson.Gson
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.model.GifModel
 import kotlinx.android.synthetic.main.fragment_dialog_gif.*
@@ -19,21 +21,21 @@ class GifDialogFragment : DialogFragment() {
             val gifDialog = GifDialogFragment()
             val args = Bundle()
 
-            args.putString("url", model.original.url)
+            args.putString("model", Gson().toJson(model).toString())
 
             gifDialog.arguments = args
             return gifDialog
         }
     }
 
-    private var url = ""
+    private lateinit var model: GifModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_FRAME, R.style.AppTheme)
 
-        arguments?.getString("url")?.also {
-            url = it
+        arguments?.getString("model")?.also {
+            model = Gson().fromJson(it, GifModel::class.java)
         } ?: return run {
             dismiss()
         }
@@ -48,7 +50,7 @@ class GifDialogFragment : DialogFragment() {
     override fun onStart() {
         super.onStart()
         Glide.with(context)
-            .load(url)
+            .load(model.original.url)
             .placeholder(
                 CircularProgressDrawable(context!!).apply {
                     strokeWidth = 5f
@@ -58,6 +60,20 @@ class GifDialogFragment : DialogFragment() {
             .error(android.R.drawable.ic_delete)
             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
             .into(bigGifView)
+
+        userNameView.text = model.userName
+
+        bigGifView.post {
+            bigGifView.layoutParams = FrameLayout.LayoutParams(
+                bigGifView.width,
+                bigGifView.width * model.original.height / model.original.width
+            )
+        }
+
+        gifInfoButton.setOnClickListener {
+            val infoDialog: GifInfoDialogFragment = GifInfoDialogFragment.create(model)
+            infoDialog.show(fragmentManager, "info_dialog")
+        }
     }
 
     override fun onDestroyView() {
