@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.bumptech.glide.Glide
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.repository.Repository

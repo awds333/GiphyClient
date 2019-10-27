@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.fragment.app.DialogFragment
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
@@ -61,13 +60,21 @@ class GifDialogFragment : DialogFragment() {
             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
             .into(bigGifView)
 
+
         userNameView.text = model.userName
 
         bigGifView.post {
-            bigGifView.layoutParams = FrameLayout.LayoutParams(
-                bigGifView.width,
-                bigGifView.width * model.original.height / model.original.width
-            )
+            val viewHeight = bigGifView.height
+            val viewWidth = bigGifView.width
+
+            val fixedHeight = viewWidth * model.original.height / model.original.width
+
+            if (fixedHeight > viewHeight) {
+                bigGifView.layoutParams.width =
+                    viewHeight * model.original.width / model.original.height
+            } else {
+                bigGifView.layoutParams.height = fixedHeight
+            }
         }
 
         gifInfoButton.setOnClickListener {

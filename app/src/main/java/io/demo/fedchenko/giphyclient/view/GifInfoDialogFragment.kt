@@ -10,9 +10,9 @@ import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.model.GifModel
 import kotlinx.android.synthetic.main.fragment_dialog_gif_info.*
 
-class GifInfoDialogFragment :DialogFragment(){
-    companion object GifInfoDialogFragmentBuilder{
-        fun create(model: GifModel):GifInfoDialogFragment{
+class GifInfoDialogFragment : DialogFragment() {
+    companion object GifInfoDialogFragmentBuilder {
+        fun create(model: GifModel): GifInfoDialogFragment {
             val gifInfoDialog = GifInfoDialogFragment()
             val args = Bundle()
 

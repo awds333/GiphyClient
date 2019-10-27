@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -93,10 +92,8 @@ class GifListAdapter(private val context: Context, val span: Int) :
 
         holder.titleView.visibility = if (model.title.isNotEmpty()) View.VISIBLE else View.GONE
 
-        holder.imageView.layoutParams = LinearLayout.LayoutParams(
-            holder.width,
+        holder.imageView.layoutParams.height =
             holder.width * model.preview.height / model.preview.width
-        )
     }
 
     override fun onViewRecycled(holder: GifViewHolder) {
