@@ -1,10 +1,7 @@
 package io.demo.fedchenko.giphyclient.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
 import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.repository.GifProvider
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -14,12 +11,17 @@ interface ExceptionListener {
     fun handleException()
 }
 
+interface KeyboardListener {
+    fun hideKeyboard()
+}
+
 class MainViewModel(application: Application, var gifProvider: GifProvider) :
     AndroidViewModel(application) {
 
     private val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
     private val gifModelsLiveData: MutableLiveData<List<GifModel>> = MutableLiveData()
     private var exceptionListener: ExceptionListener? = null
+    private var keyboardListener: KeyboardListener? = null
 
     private var trending = true
     private var lustTerm = ""
@@ -34,6 +36,7 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
     fun search(term: String) {
         if (term.trim() == "")
             return
+        keyboardListener?.hideKeyboard()
         compositeDisposable.clear()
         isLoadingLiveData.value = true
         compositeDisposable.add(
@@ -57,6 +60,7 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
     }
 
     fun getTrending() {
+        keyboardListener?.hideKeyboard()
         compositeDisposable.clear()
         isLoadingLiveData.value = true
         compositeDisposable.add(
@@ -115,6 +119,16 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
     fun removeExceptionListener() {
         exceptionListener = null
     }
+
+    fun registerKeyboardListener(listener: KeyboardListener){
+        keyboardListener = listener
+    }
+
+    fun removeKeyboardListener(){
+        keyboardListener = null
+    }
+
+    fun getIsLoading() : LiveData<Boolean> = isLoadingLiveData
 
     override fun onCleared() {
         super.onCleared()

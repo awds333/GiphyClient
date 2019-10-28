@@ -3,20 +3,21 @@ package io.demo.fedchenko.giphyclient.view
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
+import io.demo.fedchenko.giphyclient.databinding.ActivityMainBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.repository.Repository
 import io.demo.fedchenko.giphyclient.viewmodel.ExceptionListener
+import io.demo.fedchenko.giphyclient.viewmodel.KeyboardListener
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
@@ -36,33 +37,27 @@ class MainActivity : AppCompatActivity() {
             ).show()
         }
     }
+    private val keyboardListener = object : KeyboardListener{
+        override fun hideKeyboard(){
+            val view = currentFocus
+            view?.clearFocus()
+            (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
+                view?.windowToken,
+                0
+            )
+        }
+    }
 
     private var scrollPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(io.demo.fedchenko.giphyclient.R.layout.activity_main)
+        val binding : ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.lifecycleOwner = this
         mainViewModel =
             ViewModelProviders.of(this, MainViewModelFactory(application, Repository()))
                 .get(MainViewModel::class.java)
-
-        mainViewModel.observeIsLoading(
-            this,
-            Observer { progressBar.visibility = if (it) View.VISIBLE else View.GONE })
-
-        searchField.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                mainViewModel.search(searchField.text.toString())
-                if (searchField.text.toString().trim() != "")
-                    hideKeyboard()
-            }
-            true
-        }
-
-        trendingImage.setOnClickListener {
-            hideKeyboard()
-            mainViewModel.getTrending()
-        }
+        binding.mainViewModel = mainViewModel
 
         val spanCount =
             if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 3
@@ -111,22 +106,15 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
     }
 
-    private fun hideKeyboard() {
-        val view = currentFocus
-        view?.clearFocus()
-        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
-            view?.windowToken,
-            0
-        )
-    }
-
     override fun onResume() {
         super.onResume()
         mainViewModel.registerExceptionsListener(exceptionListener)
+        mainViewModel.registerKeyboardListener(keyboardListener)
     }
 
     override fun onPause() {
         super.onPause()
         mainViewModel.removeExceptionListener()
+        mainViewModel.removeKeyboardListener()
     }
 }

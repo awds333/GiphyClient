@@ -4,16 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.gson.Gson
 import io.demo.fedchenko.giphyclient.R
+import io.demo.fedchenko.giphyclient.databinding.FragmentDialogGifBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
 import kotlinx.android.synthetic.main.fragment_dialog_gif.*
 
 class GifDialogFragment : DialogFragment() {
+
+    interface GifInfoViewer {
+        fun showInfo()
+    }
 
     companion object GifDialogFragmentBuilder {
         fun create(model: GifModel): GifDialogFragment {
@@ -28,6 +33,7 @@ class GifDialogFragment : DialogFragment() {
     }
 
     private lateinit var model: GifModel
+    private lateinit var binding: FragmentDialogGifBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,42 +50,26 @@ class GifDialogFragment : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_dialog_gif, container, false)
+    ): View {
+        binding =
+            DataBindingUtil.inflate(layoutInflater, R.layout.fragment_dialog_gif, container, false)
+        return binding.root
+    }
 
     override fun onStart() {
         super.onStart()
-        Glide.with(context)
-            .load(model.original.url)
-            .placeholder(
-                CircularProgressDrawable(context!!).apply {
-                    strokeWidth = 5f
-                    centerRadius = 30f
-                    start()
-                })
-            .error(android.R.drawable.ic_delete)
-            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-            .into(bigGifView)
-
-
-        userNameView.text = model.userName
-
-        bigGifView.post {
-            val viewHeight = bigGifView.height
-            val viewWidth = bigGifView.width
-
-            val fixedHeight = viewWidth * model.original.height / model.original.width
-
-            if (fixedHeight > viewHeight) {
-                bigGifView.layoutParams.width =
-                    viewHeight * model.original.width / model.original.height
-            } else {
-                bigGifView.layoutParams.height = fixedHeight
-            }
+        binding.progressDrawable = CircularProgressDrawable(context!!).apply {
+            strokeWidth = 5f
+            centerRadius = 30f
+            start()
         }
+        binding.gifModel = model
 
-        gifInfoButton.setOnClickListener {
-            val infoDialog: GifInfoDialogFragment = GifInfoDialogFragment.create(model)
-            infoDialog.show(fragmentManager, "info_dialog")
+        binding.infoViewer = object : GifInfoViewer {
+            override fun showInfo() {
+                val infoDialog: GifInfoDialogFragment = GifInfoDialogFragment.create(model)
+                infoDialog.show(fragmentManager, "info_dialog")
+            }
         }
     }
 
