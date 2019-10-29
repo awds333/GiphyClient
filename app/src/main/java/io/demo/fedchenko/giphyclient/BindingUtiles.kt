@@ -28,16 +28,19 @@ fun setHeight(view: ImageView, properties: GifProperties, width: Int) {
 
 @BindingAdapter("ratioSize")
 fun setSize(view: ImageView, properties: GifProperties) {
-    val viewHeight = view.height
-    val viewWidth = view.width
+    //Без post view.height и view.width == 0
+    view.post {
+        val viewHeight = view.height
+        val viewWidth = view.width
 
-    val fixedHeight = viewWidth * properties.height / properties.width
+        val fixedHeight = viewWidth * properties.height / properties.width
 
-    if (fixedHeight > viewHeight) {
-        view.layoutParams.width =
-            viewHeight * properties.width / properties.height
-    } else {
-        view.layoutParams.height = fixedHeight
+        if (fixedHeight > viewHeight) {
+            view.layoutParams.width =
+                viewHeight * properties.width / properties.height
+        } else {
+            view.layoutParams.height = fixedHeight
+        }
     }
 }
 
