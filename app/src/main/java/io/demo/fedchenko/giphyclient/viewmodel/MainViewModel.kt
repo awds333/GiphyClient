@@ -15,11 +15,16 @@ interface KeyboardListener {
     fun hideKeyboard()
 }
 
+interface Searcher {
+    fun search(term: String)
+}
+
 class MainViewModel(application: Application, var gifProvider: GifProvider) :
-    AndroidViewModel(application) {
+    AndroidViewModel(application), Searcher {
 
     private val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
     private val gifModelsLiveData: MutableLiveData<List<GifModel>> = MutableLiveData()
+    private val isCloseButtonVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData()
     private var exceptionListener: ExceptionListener? = null
     private var keyboardListener: KeyboardListener? = null
 
@@ -27,13 +32,22 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
     private var lustTerm = ""
     private val compositeDisposable = CompositeDisposable()
 
+    val searchText: MutableLiveData<String> = MutableLiveData()
+    private val mediator = MediatorLiveData<String>().apply {
+        addSource(searchText) { value ->
+            setValue(value)
+            isCloseButtonVisibleLiveData.value = value.isNotEmpty()
+        }
+    }.also { it.observeForever {} }
+
     init {
         isLoadingLiveData.value = false
         gifModelsLiveData.value = emptyList()
+        isCloseButtonVisibleLiveData.value = false
         getTrending()
     }
 
-    fun search(term: String) {
+    override fun search(term: String) {
         if (term.trim() == "")
             return
         keyboardListener?.hideKeyboard()
@@ -56,10 +70,17 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
                 )
         )
         gifModelsLiveData.value = emptyList()
+    }
 
+    fun clean() {
+        searchText.value = ""
+        if (!trending)
+            getTrending()
     }
 
     fun getTrending() {
+        if (!trending)
+            searchText.value = ""
         keyboardListener?.hideKeyboard()
         compositeDisposable.clear()
         isLoadingLiveData.value = true
@@ -103,11 +124,6 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
         )
     }
 
-
-    fun observeIsLoading(lifecycleOwner: LifecycleOwner, observer: Observer<Boolean>) {
-        isLoadingLiveData.observe(lifecycleOwner, observer)
-    }
-
     fun observeGifModels(lifecycleOwner: LifecycleOwner, observer: Observer<List<GifModel>>) {
         gifModelsLiveData.observe(lifecycleOwner, observer)
     }
@@ -120,15 +136,17 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
         exceptionListener = null
     }
 
-    fun registerKeyboardListener(listener: KeyboardListener){
+    fun registerKeyboardListener(listener: KeyboardListener) {
         keyboardListener = listener
     }
 
-    fun removeKeyboardListener(){
+    fun removeKeyboardListener() {
         keyboardListener = null
     }
 
-    fun getIsLoading() : LiveData<Boolean> = isLoadingLiveData
+    fun getIsLoading(): LiveData<Boolean> = isLoadingLiveData
+
+    fun getIsCloseButtonVisible(): LiveData<Boolean> = isCloseButtonVisibleLiveData
 
     override fun onCleared() {
         super.onCleared()

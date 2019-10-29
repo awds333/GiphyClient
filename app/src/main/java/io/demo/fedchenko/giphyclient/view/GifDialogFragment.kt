@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ShareCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
@@ -18,6 +19,10 @@ class GifDialogFragment : DialogFragment() {
 
     interface GifInfoViewer {
         fun showInfo()
+    }
+
+    interface GifDistributor {
+        fun share()
     }
 
     companion object GifDialogFragmentBuilder {
@@ -63,6 +68,17 @@ class GifDialogFragment : DialogFragment() {
             centerRadius = 30f
             start()
         }
+
+        binding.distributor = object : GifDistributor{
+            override fun share() {
+                ShareCompat.IntentBuilder.from(activity)
+                    .setType("text/plain")
+                    .setChooserTitle("Share Gif")
+                    .setText(model.original.url)
+                    .startChooser()
+            }
+        }
+
         binding.gifModel = model
 
         binding.infoViewer = object : GifInfoViewer {

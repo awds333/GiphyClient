@@ -62,10 +62,9 @@ class GifListAdapter(private val context: Context, val span: Int) :
             centerRadius = 30f
             start()
         }
+        binding.ratioWidth = parent.width / span
 
-        return GifViewHolder(
-            binding
-        )
+        return GifViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -75,5 +74,6 @@ class GifListAdapter(private val context: Context, val span: Int) :
     override fun onBindViewHolder(holder: GifViewHolder, position: Int) {
         holder.binding.clickListener = gifOnItemClickListener
         holder.binding.gifModel = gifModels[position]
+        holder.binding.executePendingBindings()
     }
 }
