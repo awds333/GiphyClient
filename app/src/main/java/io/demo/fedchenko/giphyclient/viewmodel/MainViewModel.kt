@@ -33,17 +33,19 @@ class MainViewModel(application: Application, var gifProvider: GifProvider) :
     private val compositeDisposable = CompositeDisposable()
 
     val searchText: MutableLiveData<String> = MutableLiveData()
-    private val mediator = MediatorLiveData<String>().apply {
-        addSource(searchText) { value ->
-            setValue(value)
-            isCloseButtonVisibleLiveData.value = value.isNotEmpty()
-        }
-    }.also { it.observeForever {} }
+    private val mediator = MediatorLiveData<String>()
 
     init {
         isLoadingLiveData.value = false
         gifModelsLiveData.value = emptyList()
         isCloseButtonVisibleLiveData.value = false
+        mediator.apply {
+            addSource(searchText) { value ->
+                setValue(value)
+                isCloseButtonVisibleLiveData.value = value.isNotEmpty()
+            }
+            observeForever {}
+        }
         getTrending()
     }
 

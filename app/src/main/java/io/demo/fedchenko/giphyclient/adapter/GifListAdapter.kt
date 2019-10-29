@@ -12,7 +12,7 @@ import io.demo.fedchenko.giphyclient.databinding.GifViewBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
 
 
-class GifListAdapter(private val context: Context, val span: Int) :
+class GifListAdapter(private val context: Context, private val span: Int) :
     RecyclerView.Adapter<GifViewHolder>() {
 
     interface GifOnItemClickListener {
@@ -57,7 +57,7 @@ class GifListAdapter(private val context: Context, val span: Int) :
             parent,
             false
         )
-        binding.progressDrawable = CircularProgressDrawable(context!!).apply {
+        binding.progressDrawable = CircularProgressDrawable(context).apply {
             strokeWidth = 5f
             centerRadius = 30f
             start()
