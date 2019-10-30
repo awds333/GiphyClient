@@ -13,7 +13,7 @@ import com.google.gson.Gson
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.databinding.FragmentDialogGifBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
-import kotlinx.android.synthetic.main.fragment_dialog_gif.*
+import kotlinx.android.synthetic.main.gif_image_view.*
 
 class GifDialogFragment : DialogFragment() {
 
@@ -91,6 +91,6 @@ class GifDialogFragment : DialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Glide.clear(bigGifView)
+        Glide.clear(gifImageView)
     }
 }

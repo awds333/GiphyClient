@@ -5,13 +5,13 @@ import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface GyphyAPI {
+interface GiphyAPI {
 
     @GET("search")
     fun findGifsByTerm(
         @Query("q") term: String, @Query("limit") limit: Int
         , @Query("offset") offset: Int
-        , @Query("api_key") key: String = "g0huuU56R74KkSQCYLdzfqCDyr4JmssE"
+        , @Query("api_key") key: String
     )
             : Observable<ResponseModel>
 
@@ -19,7 +19,7 @@ interface GyphyAPI {
     fun getTrendingGifs(
         @Query("limit") limit: Int
         , @Query("offset") offset: Int
-        , @Query("api_key") key: String = "g0huuU56R74KkSQCYLdzfqCDyr4JmssE"
+        , @Query("api_key") key: String
     )
             : Observable<ResponseModel>
 }

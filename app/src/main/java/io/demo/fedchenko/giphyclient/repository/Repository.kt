@@ -3,13 +3,13 @@ package io.demo.fedchenko.giphyclient.repository
 import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.model.GifNotParsedModel
 import io.demo.fedchenko.giphyclient.model.GifProperties
-import io.demo.fedchenko.giphyclient.retrofit.GyphyAPI
+import io.demo.fedchenko.giphyclient.retrofit.GiphyAPI
 import io.demo.fedchenko.giphyclient.retrofit.RetrofitClient
 import io.reactivex.Observable
 
 
-class Repository : GifProvider {
-    private val gyphyAPI: GyphyAPI = RetrofitClient.instance.create(GyphyAPI::class.java)
+class Repository(private val giphyKey: String) : GifProvider {
+    private val giphyAPI: GiphyAPI = RetrofitClient.instance.create(GiphyAPI::class.java)
 
     private fun fromRaw(notParsedModel: GifNotParsedModel): GifModel {
         val original = GifProperties(
@@ -34,7 +34,7 @@ class Repository : GifProvider {
     }
 
     override fun getByTerm(term: String, count: Int, offset: Int): Observable<List<GifModel>> {
-        return gyphyAPI.findGifsByTerm(term, count, offset)
+        return giphyAPI.findGifsByTerm(term, count, offset,giphyKey)
             .map { it.gifModels }
             .map {
                 val gifList = emptyList<GifModel>().toMutableList()
@@ -46,7 +46,7 @@ class Repository : GifProvider {
     }
 
     override fun getTrendingGifs(count: Int, offset: Int): Observable<List<GifModel>> {
-        return gyphyAPI.getTrendingGifs(count, offset)
+        return giphyAPI.getTrendingGifs(count, offset, giphyKey)
             .map { it.gifModels }
             .map {
                 val gifList = emptyList<GifModel>().toMutableList()

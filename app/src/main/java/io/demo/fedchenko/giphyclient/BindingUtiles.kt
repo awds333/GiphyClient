@@ -1,34 +1,46 @@
 package io.demo.fedchenko.giphyclient
 
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import android.widget.ImageView
 import androidx.databinding.BindingAdapter
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.GlideDrawable
+import com.bumptech.glide.request.animation.GlideAnimation
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget
 import io.demo.fedchenko.giphyclient.model.GifProperties
 import io.demo.fedchenko.giphyclient.viewmodel.Searcher
+import kotlinx.android.synthetic.main.gif_image_view.view.*
 
-@BindingAdapter("customUrl", "progressDrawable")
-fun loadGif(view: ImageView, url: String, progressDrawable: CircularProgressDrawable) {
-    Glide.clear(view)
+@BindingAdapter("customUrl")
+fun loadGif(view: View, url: String) {
+    if (view.gifImageView == null || view.circlePogressBar == null)
+        return
+    Glide.clear(view.gifImageView)
+    view.circlePogressBar.visibility = View.VISIBLE
     Glide.with(view.context)
         .load(url)
-        .placeholder(progressDrawable)
         .error(android.R.drawable.ic_delete)
         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-        .into(view)
+        .into(object : GlideDrawableImageViewTarget(view.gifImageView) {
+            override fun onResourceReady(
+                resource: GlideDrawable?,
+                animation: GlideAnimation<in GlideDrawable>?
+            ) {
+                super.onResourceReady(resource, animation)
+                view.circlePogressBar.visibility = View.GONE
+            }
+        })
 }
 
 @BindingAdapter("gifInfo", "ratioWidth")
-fun setHeight(view: ImageView, properties: GifProperties, width: Int) {
+fun setHeight(view: View, properties: GifProperties, width: Int) {
     view.layoutParams.height = width * properties.height / properties.width
 }
 
 @BindingAdapter("ratioSize")
-fun setSize(view: ImageView, properties: GifProperties) {
-    //Без post view.height и view.width == 0
+fun setSize(view: View, properties: GifProperties) {
     view.post {
         val viewHeight = view.height
         val viewWidth = view.width

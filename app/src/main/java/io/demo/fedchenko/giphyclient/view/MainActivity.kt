@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         val binding : ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
         mainViewModel =
-            ViewModelProviders.of(this, MainViewModelFactory(application, Repository()))
+            ViewModelProviders.of(this, MainViewModelFactory(application, Repository(getString(R.string.giphy_key))))
                 .get(MainViewModel::class.java)
         binding.mainViewModel = mainViewModel
 

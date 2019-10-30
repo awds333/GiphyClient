@@ -7,7 +7,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import io.demo.fedchenko.giphyclient.databinding.GifViewBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
 
@@ -57,11 +56,6 @@ class GifListAdapter(private val context: Context, private val span: Int) :
             parent,
             false
         )
-        binding.progressDrawable = CircularProgressDrawable(context).apply {
-            strokeWidth = 5f
-            centerRadius = 30f
-            start()
-        }
         binding.ratioWidth = parent.width / span
 
         return GifViewHolder(binding)

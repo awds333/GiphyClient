@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <variable
             name="gifModel"
             type="io.demo.fedchenko.giphyclient.model.GifModel" />
+
         <variable
             name="clickListener"
             type="io.demo.fedchenko.giphyclient.adapter.GifListAdapter.GifOnItemClickListener" />
-        <variable
-            name="progressDrawable"
-            type="androidx.swiperefreshlayout.widget.CircularProgressDrawable" />
+
         <variable
             name="ratioWidth"
             type="Integer" />
@@ -32,19 +33,21 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/imageView"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="fitXY"
-                app:customUrl="@{gifModel.preview.url}"
-                app:progressDrawable="@{progressDrawable}"
-                app:gifInfo="@{gifModel.preview}"
-                app:ratioWidth="@{ratioWidth}"
+                android:layout_height="wrap_content"
                 android:clickable="true"
-                android:onClick="@{()->clickListener.onItemClick(gifModel)}"
-                tools:srcCompat="@tools:sample/avatars"
-                tools:layout_height="200dp"/>
+                android:onClick="@{() ->clickListener.onItemClick(gifModel)}"
+                app:customUrl="@{gifModel.preview.url}"
+                app:gifInfo="@{gifModel.preview}"
+                app:ratioWidth="@{ratioWidth}">
+
+                <include
+                    layout="@layout/gif_image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -58,9 +61,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:text="@{gifModel.userName.empty ? @string/default_user : gifModel.userName}"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
-                    android:text="@{gifModel.userName.empty ? @string/default_user : gifModel.userName}"
                     tools:text="User" />
 
                 <TextView

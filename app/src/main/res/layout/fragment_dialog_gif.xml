@@ -33,19 +33,18 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
-        <ImageView
-            android:id="@+id/bigGifView"
+        <include
+            android:id="@+id/include"
+            layout="@layout/gif_image_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:customUrl="@{gifModel.original.url}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio=""
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:progressDrawable="@{progressDrawable}"
-            app:ratioSize="@{gifModel.original}"
-            tools:srcCompat="@tools:sample/avatars" />
+            app:customUrl="@{gifModel.original.url}"
+            app:ratioSize="@{gifModel.original}"/>
+
 
         <TextView
             android:id="@+id/userNameView"
@@ -60,10 +59,9 @@
             android:shadowRadius="3"
             android:text="@{gifModel.userName}"
             android:textColor="@android:color/background_light"
-            app:layout_constraintBottom_toBottomOf="@+id/bigGifView"
-            app:layout_constraintEnd_toEndOf="@+id/bigGifView"
+            app:layout_constraintBottom_toBottomOf="@+id/include"
+            app:layout_constraintEnd_toEndOf="@+id/include"
             tools:text="@string/default_user" />
-
 
         <ImageButton
             android:id="@+id/gifInfoButton"
