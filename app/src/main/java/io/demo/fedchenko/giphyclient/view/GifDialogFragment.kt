@@ -69,7 +69,7 @@ class GifDialogFragment : DialogFragment() {
             start()
         }
 
-        binding.distributor = object : GifDistributor{
+        binding.distributor = object : GifDistributor {
             override fun share() {
                 ShareCompat.IntentBuilder.from(activity)
                     .setType("text/plain")

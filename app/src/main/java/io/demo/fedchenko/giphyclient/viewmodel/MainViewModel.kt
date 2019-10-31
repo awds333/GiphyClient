@@ -63,8 +63,8 @@ class MainViewModel(var gifProvider: GifProvider) :
                         trending = false
                         isLoadingLiveData.value = false
                         gifModelsLiveData.value = it
-                    }
-                    , {
+                    },
+                    {
                         isLoadingLiveData.value = false
                         exceptionListener?.handleException()
                     }
@@ -93,8 +93,8 @@ class MainViewModel(var gifProvider: GifProvider) :
                         trending = true
                         isLoadingLiveData.value = false
                         gifModelsLiveData.value = it
-                    }
-                    , {
+                    },
+                    {
                         isLoadingLiveData.value = false
                         exceptionListener?.handleException()
                     }
@@ -116,8 +116,8 @@ class MainViewModel(var gifProvider: GifProvider) :
                 { newModels: List<GifModel> ->
                     isLoadingLiveData.value = false
                     gifModelsLiveData.value = gifModelsLiveData.value!!.plus(newModels)
-                }
-                , {
+                },
+                {
                     isLoadingLiveData.value = false
                     exceptionListener?.handleException()
                 }

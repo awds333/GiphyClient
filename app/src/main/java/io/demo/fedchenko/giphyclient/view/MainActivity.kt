@@ -23,20 +23,20 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
 
-    private val mainViewModel: MainViewModel by inject<MainViewModel>()
+    private val mainViewModel: MainViewModel by inject()
     private lateinit var adapter: GifListAdapter
     private lateinit var layoutManager: StaggeredGridLayoutManager
     private val exceptionListener = object : ExceptionListener {
         override fun handleException() {
             Toast.makeText(
                 this@MainActivity,
-                io.demo.fedchenko.giphyclient.R.string.request_failed,
+                R.string.request_failed,
                 Toast.LENGTH_LONG
             ).show()
         }
     }
-    private val keyboardListener = object : KeyboardListener{
-        override fun hideKeyboard(){
+    private val keyboardListener = object : KeyboardListener {
+        override fun hideKeyboard() {
             val view = currentFocus
             view?.clearFocus()
             (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
@@ -50,7 +50,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding : ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val binding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
         binding.mainViewModel = mainViewModel
 

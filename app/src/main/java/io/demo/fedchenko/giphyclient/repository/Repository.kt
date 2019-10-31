@@ -1,29 +1,21 @@
 package io.demo.fedchenko.giphyclient.repository
 
+import io.demo.fedchenko.giphyclient.model.GifInfo
 import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.model.GifNotParsedModel
 import io.demo.fedchenko.giphyclient.model.GifProperties
 import io.demo.fedchenko.giphyclient.retrofit.GiphyAPI
-import io.demo.fedchenko.giphyclient.retrofit.RetrofitClient
 import io.reactivex.Observable
 
 
-class Repository(private val giphyKey: String) : GifProvider {
-    private val giphyAPI: GiphyAPI = RetrofitClient.instance.create(GiphyAPI::class.java)
+class Repository(private val giphyKey: String, private val giphyAPI: GiphyAPI) : GifProvider {
 
     private fun fromRaw(notParsedModel: GifNotParsedModel): GifModel {
-        val original = GifProperties(
-            notParsedModel.images.gifInfo.width,
-            notParsedModel.images.gifInfo.height,
-            notParsedModel.images.gifInfo.url,
-            notParsedModel.images.gifInfo.size
-        )
-        val preview = if (notParsedModel.images.previewGifInfo.url.isNotEmpty()) GifProperties(
-            notParsedModel.images.previewGifInfo.width,
-            notParsedModel.images.previewGifInfo.height,
-            notParsedModel.images.previewGifInfo.url,
-            notParsedModel.images.previewGifInfo.size
-        ) else original
+        val original = propertiesFromRaw(notParsedModel.images.gifInfo)
+        val preview = if (notParsedModel.images.previewGifInfo.url.isNotEmpty())
+            propertiesFromRaw(notParsedModel.images.previewGifInfo)
+        else
+            original
         return GifModel(
             original,
             preview,
@@ -32,6 +24,13 @@ class Repository(private val giphyKey: String) : GifProvider {
             notParsedModel.importDateTime
         )
     }
+
+    private fun propertiesFromRaw(info: GifInfo) = GifProperties(
+        info.width,
+        info.height,
+        info.url,
+        info.size
+    )
 
     override fun getByTerm(term: String, count: Int, offset: Int): Observable<List<GifModel>> {
         return giphyAPI.findGifsByTerm(term, count, offset, giphyKey)
