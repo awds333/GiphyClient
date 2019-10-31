@@ -33,21 +33,15 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <FrameLayout
+            <include
+                android:id="@+id/gifImageViewInclude"
+                layout="@layout/gif_image_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
                 android:onClick="@{() ->clickListener.onItemClick(gifModel)}"
                 app:customUrl="@{gifModel.preview.url}"
                 app:gifInfo="@{gifModel.preview}"
-                app:ratioWidth="@{ratioWidth}">
-
-                <include
-                    layout="@layout/gif_image_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-            </FrameLayout>
+                app:ratioWidth="@{ratioWidth}" />
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -1,6 +1,5 @@
 package io.demo.fedchenko.giphyclient.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.*
 import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.repository.GifProvider
@@ -19,8 +18,8 @@ interface Searcher {
     fun search(term: String)
 }
 
-class MainViewModel(application: Application, var gifProvider: GifProvider) :
-    AndroidViewModel(application), Searcher {
+class MainViewModel(var gifProvider: GifProvider) :
+    ViewModel(), Searcher {
 
     private val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
     private val gifModelsLiveData: MutableLiveData<List<GifModel>> = MutableLiveData()

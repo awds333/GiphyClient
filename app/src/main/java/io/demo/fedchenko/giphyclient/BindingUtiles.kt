@@ -34,7 +34,7 @@ fun loadGif(view: View, url: String) {
         })
 }
 
-@BindingAdapter("gifInfo", "ratioWidth")
+@BindingAdapter("gifInfo", "ratioWidth", requireAll = true)
 fun setHeight(view: View, properties: GifProperties, width: Int) {
     view.layoutParams.height = width * properties.height / properties.width
 }

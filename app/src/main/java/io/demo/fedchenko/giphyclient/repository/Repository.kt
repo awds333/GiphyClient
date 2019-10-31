@@ -34,7 +34,7 @@ class Repository(private val giphyKey: String) : GifProvider {
     }
 
     override fun getByTerm(term: String, count: Int, offset: Int): Observable<List<GifModel>> {
-        return giphyAPI.findGifsByTerm(term, count, offset,giphyKey)
+        return giphyAPI.findGifsByTerm(term, count, offset, giphyKey)
             .map { it.gifModels }
             .map {
                 val gifList = emptyList<GifModel>().toMutableList()

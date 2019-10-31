@@ -7,7 +7,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -15,17 +14,16 @@ import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.databinding.ActivityMainBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
-import io.demo.fedchenko.giphyclient.repository.Repository
 import io.demo.fedchenko.giphyclient.viewmodel.ExceptionListener
 import io.demo.fedchenko.giphyclient.viewmodel.KeyboardListener
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
-import io.demo.fedchenko.giphyclient.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
 
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel by inject<MainViewModel>()
     private lateinit var adapter: GifListAdapter
     private lateinit var layoutManager: StaggeredGridLayoutManager
     private val exceptionListener = object : ExceptionListener {
@@ -54,9 +52,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding : ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
-        mainViewModel =
-            ViewModelProviders.of(this, MainViewModelFactory(application, Repository(getString(R.string.giphy_key))))
-                .get(MainViewModel::class.java)
         binding.mainViewModel = mainViewModel
 
         val spanCount =
