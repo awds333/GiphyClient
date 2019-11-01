@@ -12,18 +12,21 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 val viewModelModule: Module = module {
-    viewModel { MainViewModel(gifProvider = get() as Repository) }
+    viewModel { MainViewModel(get<Repository>()) }
 }
 
 val repositoryModule: Module = module {
     single {
         Repository(
             getProperty("qiphy_key"),
-            Retrofit.Builder()
-                .baseUrl("https://api.giphy.com/v1/gifs/")
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build().create(GiphyAPI::class.java)
+            get()
         )
+    }
+    single {
+        Retrofit.Builder()
+            .baseUrl(getProperty<String>("base_url"))
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build().create(GiphyAPI::class.java)
     }
 }

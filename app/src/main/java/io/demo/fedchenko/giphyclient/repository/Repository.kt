@@ -8,7 +8,7 @@ import io.demo.fedchenko.giphyclient.retrofit.GiphyAPI
 import io.reactivex.Observable
 
 
-class Repository(private val giphyKey: String, private val giphyAPI: GiphyAPI) : GifProvider {
+class Repository(private val giphyKey: String, private val giphyAPI: GiphyAPI) : GifProvider{
 
     private fun fromRaw(notParsedModel: GifNotParsedModel): GifModel {
         val original = propertiesFromRaw(notParsedModel.images.gifInfo)

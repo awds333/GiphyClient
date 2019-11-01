@@ -4,6 +4,8 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
@@ -64,4 +66,23 @@ fun setSearchListener(view: EditText, searcher: Searcher) {
         }
         true
     }
+}
+
+@BindingAdapter("onScrollEndListener")
+fun setScrollEndListener(recyclerView: RecyclerView, action: () -> Unit) {
+    recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            (recyclerView.layoutManager as StaggeredGridLayoutManager).also {
+                val count = it.itemCount - 1
+                val lastVisible = it.findLastVisibleItemPositions(IntArray(it.spanCount))
+                lastVisible.forEach {
+                    if (it == count) {
+                        action()
+                        return@forEach
+                    }
+                }
+            }
+        }
+    })
 }

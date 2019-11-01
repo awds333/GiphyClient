@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
@@ -18,12 +17,12 @@ import io.demo.fedchenko.giphyclient.viewmodel.ExceptionListener
 import io.demo.fedchenko.giphyclient.viewmodel.KeyboardListener
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 
 class MainActivity : AppCompatActivity() {
 
-    private val mainViewModel: MainViewModel by inject()
+    private val mainViewModel: MainViewModel by viewModel()
     private lateinit var adapter: GifListAdapter
     private lateinit var layoutManager: StaggeredGridLayoutManager
     private val exceptionListener = object : ExceptionListener {
@@ -76,18 +75,6 @@ class MainActivity : AppCompatActivity() {
             mainViewModel.observeGifModels(this, adapter.gifModelsObserver)
             recycler.scrollToPosition(scrollPosition)
         }
-
-        recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val count = layoutManager.itemCount - 1
-                val lastVisible = layoutManager.findLastVisibleItemPositions(IntArray(3))
-                lastVisible.forEach {
-                    if (it == count)
-                        mainViewModel.getMoreGifs()
-                }
-            }
-        })
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {

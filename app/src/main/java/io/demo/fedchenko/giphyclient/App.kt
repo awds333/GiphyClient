@@ -10,7 +10,12 @@ class App : Application() {
         super.onCreate()
         startKoin {
             modules(listOf(viewModelModule, repositoryModule))
-            properties(mapOf(Pair("qiphy_key", "g0huuU56R74KkSQCYLdzfqCDyr4JmssE")))
+            properties(
+                mapOf(
+                    Pair("qiphy_key", "g0huuU56R74KkSQCYLdzfqCDyr4JmssE"),
+                    Pair("base_url", "https://api.giphy.com/v1/gifs/")
+                )
+            )
         }
 
     }

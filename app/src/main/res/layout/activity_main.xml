@@ -46,7 +46,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchField"
-            app:reverseLayout="true" />
+            app:reverseLayout="true"
+            app:onScrollEndListener="@{()->mainViewModel.getMoreGifs()}"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -66,8 +67,6 @@
             android:layout_height="37dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:clickable="true"
-            android:onClick="@{() ->mainViewModel.getTrending()}"
             android:scaleType="fitXY"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
