@@ -1,7 +1,7 @@
 package io.demo.fedchenko.giphyclient.retrofit
 
 import io.demo.fedchenko.giphyclient.model.ResponseModel
-import io.reactivex.Observable
+import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -13,7 +13,7 @@ interface GiphyAPI {
         , @Query("offset") offset: Int
         , @Query("api_key") key: String
     )
-            : Observable<ResponseModel>
+            : Single<ResponseModel>
 
     @GET("trending")
     fun getTrendingGifs(
@@ -21,5 +21,5 @@ interface GiphyAPI {
         , @Query("offset") offset: Int
         , @Query("api_key") key: String
     )
-            : Observable<ResponseModel>
+            : Single<ResponseModel>
 }

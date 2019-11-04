@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="gifModel"
             type="io.demo.fedchenko.giphyclient.model.GifModel" />

@@ -1,47 +1,55 @@
 package io.demo.fedchenko.giphyclient.repository
 
 import io.demo.fedchenko.giphyclient.model.GifModel
-import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.disposables.Disposables
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
 
 abstract class GifLoader {
-    var isLoading = false
-        private set
 
-    private val gifsPublisher: PublishSubject<List<GifModel>> = PublishSubject.create()
-    val gifsObservable: Observable<List<GifModel>> = gifsPublisher
+    interface ExceptionsListener {
+        fun handleException(exception: Throwable)
+    }
 
-    private val exceptionsPublisher: PublishSubject<Throwable> = PublishSubject.create()
-    val exceptionsObservable: Observable<Throwable> = exceptionsPublisher
+    interface GifModelsListListener {
+        fun updateList(models: List<GifModel>)
+    }
+
+    private var gifModelsListListener: GifModelsListListener? = null
+
+    private var exceptionsListener: ExceptionsListener? = null
 
     private var disposable: Disposable = Disposables.empty()
 
     private var loadedGifModels: List<GifModel> = emptyList()
-    init {
-        gifsPublisher.onNext(emptyList())
-    }
 
     fun loadMoreGifs() {
-        if (isLoading)
-            return
-        isLoading = true
-        disposable = buildRequest(loadedGifModels.size).subscribeOn(Schedulers.io()).subscribe(
-            {
-                isLoading = false
-                loadedGifModels = loadedGifModels + it
-                gifsPublisher.onNext(loadedGifModels)
-            }, {
-                exceptionsPublisher.onNext(it)
-            }
-        )
+        disposable = buildRequest(loadedGifModels.size)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    loadedGifModels = loadedGifModels + it
+                    gifModelsListListener?.updateList(loadedGifModels)
+                }, {
+                    exceptionsListener?.handleException(it)
+                }
+            )
     }
 
-    protected abstract fun buildRequest(offset: Int): Observable<List<GifModel>>
+    protected abstract fun buildRequest(offset: Int): Single<List<GifModel>>
 
     fun close() {
         disposable.dispose()
+    }
+
+    fun setExceptionsListener(listener: ExceptionsListener){
+        exceptionsListener = listener
+    }
+
+    fun setGifModelsListListener(listener: GifModelsListListener){
+        gifModelsListListener = listener
     }
 }

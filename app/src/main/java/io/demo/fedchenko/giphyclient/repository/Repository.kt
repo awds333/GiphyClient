@@ -5,7 +5,7 @@ import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.model.GifNotParsedModel
 import io.demo.fedchenko.giphyclient.model.GifProperties
 import io.demo.fedchenko.giphyclient.retrofit.GiphyAPI
-import io.reactivex.Observable
+import io.reactivex.Single
 
 
 class Repository(private val giphyKey: String, private val giphyAPI: GiphyAPI) : GifProvider{
@@ -32,7 +32,7 @@ class Repository(private val giphyKey: String, private val giphyAPI: GiphyAPI) :
         info.size
     )
 
-    override fun getByTerm(term: String, count: Int, offset: Int): Observable<List<GifModel>> {
+    override fun getByTerm(term: String, count: Int, offset: Int): Single<List<GifModel>> {
         return giphyAPI.findGifsByTerm(term, count, offset, giphyKey)
             .map { it.gifModels }
             .map {
@@ -44,7 +44,7 @@ class Repository(private val giphyKey: String, private val giphyAPI: GiphyAPI) :
             }
     }
 
-    override fun getTrendingGifs(count: Int, offset: Int): Observable<List<GifModel>> {
+    override fun getTrendingGifs(count: Int, offset: Int): Single<List<GifModel>> {
         return giphyAPI.getTrendingGifs(count, offset, giphyKey)
             .map { it.gifModels }
             .map {
