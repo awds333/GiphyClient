@@ -15,14 +15,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name="io.demo.fedchenko.giphyclient.view.MainActivity">
+        <activity android:name="io.demo.fedchenko.giphyclient.view.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".view.GifViewActivity" android:theme="@style/TransparentTheme"/>
     </application>
 
 </manifest>

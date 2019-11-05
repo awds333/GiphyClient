@@ -88,7 +88,7 @@ fun setScrollEndListener(recyclerView: RecyclerView, action: () -> Unit) {
     })
 }
 
-@BindingAdapter("onItemClickModel","onItemClickListener")
+@BindingAdapter("onItemClickModel", "onItemClickListener")
 fun setOpenGifViewDialog(
     view: View,
     model: GifModel,

@@ -1,16 +1,19 @@
 package io.demo.fedchenko.giphyclient.view
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import io.demo.fedchenko.giphyclient.R
+import com.google.gson.Gson
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.databinding.ActivityMainBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
@@ -30,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         override fun handleException() {
             Toast.makeText(
                 this@MainActivity,
-                R.string.request_failed,
+                io.demo.fedchenko.giphyclient.R.string.request_failed,
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -51,7 +54,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivityMainBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_main)
+            DataBindingUtil.setContentView(
+                this,
+                io.demo.fedchenko.giphyclient.R.layout.activity_main
+            )
         binding.lifecycleOwner = this
         binding.mainViewModel = mainViewModel
 
@@ -66,9 +72,17 @@ class MainActivity : AppCompatActivity() {
         adapter = GifListAdapter(this, spanCount)
         adapter.setOnItemClickListener(object : GifListAdapter.GifOnItemClickListener {
             override fun onItemClick(view: View, item: GifModel) {
-                val dialog = GifDialogFragment.create(item)
-                val transition = supportFragmentManager.beginTransaction()
-                dialog.show(transition, "dialog")
+                view.transitionName = item.original.url
+                val activityOptionsCompat =
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        this@MainActivity,
+                        Pair(view, view.transitionName)
+                    )
+                val intent = Intent(this@MainActivity, GifViewActivity::class.java)
+
+                intent.putExtra("model", Gson().toJson(item).toString())
+
+                startActivity(intent, activityOptionsCompat.toBundle())
             }
         })
 

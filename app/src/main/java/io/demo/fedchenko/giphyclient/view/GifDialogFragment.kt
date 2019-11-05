@@ -9,7 +9,6 @@ import androidx.core.app.ShareCompat
 import androidx.core.app.SharedElementCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import io.demo.fedchenko.giphyclient.databinding.FragmentDialogGifBinding
@@ -87,11 +86,6 @@ class GifDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        binding.progressDrawable = CircularProgressDrawable(context!!).apply {
-            strokeWidth = 5f
-            centerRadius = 30f
-            start()
-        }
 
         binding.distributor = object : GifDistributor {
             override fun share() {
