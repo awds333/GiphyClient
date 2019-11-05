@@ -43,7 +43,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:customUrl="@{gifModel.original.url}"
-            app:ratioSize="@{gifModel.original}"/>
+            app:ratioSize="@{gifModel.original}"
+            android:transitionName = "tr"/>
 
 
         <TextView

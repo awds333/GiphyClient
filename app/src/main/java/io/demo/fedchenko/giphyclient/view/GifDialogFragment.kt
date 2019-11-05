@@ -1,6 +1,8 @@
 package io.demo.fedchenko.giphyclient.view
 
+import android.os.Build
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,10 +12,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
-import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.databinding.FragmentDialogGifBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
 import kotlinx.android.synthetic.main.gif_image_view.*
+
+
 
 class GifDialogFragment : DialogFragment() {
 
@@ -42,7 +45,14 @@ class GifDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, R.style.AppTheme)
+        setStyle(STYLE_NO_FRAME, io.demo.fedchenko.giphyclient.R.style.AppTheme)
+
+        val transition = TransitionInflater.from(context)
+            .inflateTransition(io.demo.fedchenko.giphyclient.R.transition.image_shared_element_transition)
+        sharedElementEnterTransition = transition
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        }
 
         arguments?.getString("model")?.also {
             model = Gson().fromJson(it, GifModel::class.java)
@@ -57,7 +67,7 @@ class GifDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding =
-            DataBindingUtil.inflate(layoutInflater, R.layout.fragment_dialog_gif, container, false)
+            DataBindingUtil.inflate(layoutInflater, io.demo.fedchenko.giphyclient.R.layout.fragment_dialog_gif, container, false)
         return binding.root
     }
 

@@ -15,16 +15,14 @@ interface KeyboardListener {
     fun hideKeyboard()
 }
 
-interface Searcher {
-    fun search(term: String)
-}
-
 class MainViewModel(private var gifProvider: GifProvider) :
-    ViewModel(), Searcher {
+    ViewModel() {
 
     private val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val isLoading: LiveData<Boolean> = isLoadingLiveData
     private val gifModelsLiveData: MutableLiveData<List<GifModel>> = MutableLiveData()
-    private val isCleanButtonVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    private val isCloseButtonVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val isCloseButtonVisible: LiveData<Boolean> = isCloseButtonVisibleLiveData
     private var exceptionListener: ExceptionListener? = null
     private var keyboardListener: KeyboardListener? = null
 
@@ -50,21 +48,21 @@ class MainViewModel(private var gifProvider: GifProvider) :
     init {
         isLoadingLiveData.value = false
         gifModelsLiveData.value = emptyList()
-        isCleanButtonVisibleLiveData.value = false
+        isCloseButtonVisibleLiveData.value = false
         searchText.observeForever {
-            isCleanButtonVisibleLiveData.value = it.isNotEmpty()
+            isCloseButtonVisibleLiveData.value = it.isNotEmpty()
         }
         subscribeToLoader()
     }
 
-    override fun search(term: String) {
-        val trimedTerm = term.trim()
-        if (trimedTerm == "" || trimedTerm == lastTerm)
+    fun search() {
+        val trimTerm = searchText.value?.trim() ?: return
+        if (trimTerm == "" || trimTerm == lastTerm)
             return
-        lastTerm = trimedTerm
+        lastTerm = trimTerm
         keyboardListener?.hideKeyboard()
         gifLoader.close()
-        gifLoader = SearchGifLoader(gifProvider, trimedTerm)
+        gifLoader = SearchGifLoader(gifProvider, trimTerm)
         subscribeToLoader()
     }
 
@@ -118,10 +116,6 @@ class MainViewModel(private var gifProvider: GifProvider) :
     fun removeKeyboardListener() {
         keyboardListener = null
     }
-
-    fun getIsLoading(): LiveData<Boolean> = isLoadingLiveData
-
-    fun getIsCloseButtonVisible(): LiveData<Boolean> = isCleanButtonVisibleLiveData
 
     override fun onCleared() {
         super.onCleared()

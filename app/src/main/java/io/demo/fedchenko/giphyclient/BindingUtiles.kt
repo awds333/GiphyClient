@@ -3,6 +3,7 @@ package io.demo.fedchenko.giphyclient
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -11,8 +12,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget
+import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.model.GifProperties
-import io.demo.fedchenko.giphyclient.viewmodel.Searcher
+import io.demo.fedchenko.giphyclient.view.GifDialogFragment
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 
 @BindingAdapter("customUrl")
@@ -59,10 +61,10 @@ fun setSize(view: View, properties: GifProperties) {
 }
 
 @BindingAdapter("searchListener")
-fun setSearchListener(view: EditText, searcher: Searcher) {
+fun setSearchListener(view: EditText, action: () -> Unit) {
     view.setOnEditorActionListener { _, actionId, _ ->
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-            searcher.search(view.text.toString())
+            action()
         }
         true
     }

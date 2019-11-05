@@ -66,7 +66,8 @@ class MainActivity : AppCompatActivity() {
         adapter.setOnItemClickListener(object : GifListAdapter.GifOnItemClickListener {
             override fun onItemClick(item: GifModel) {
                 val dialog = GifDialogFragment.create(item)
-                dialog.show(supportFragmentManager, "dialog")
+                val transition = supportFragmentManager.beginTransaction()
+                dialog.show(transition, "dialog")
             }
         })
 

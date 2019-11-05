@@ -38,7 +38,7 @@
                 layout="@layout/gif_image_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{() ->clickListener.onItemClick(gifModel)}"
+                android:onClick="@{()->clickListener.onItemClick(gifModel)}"
                 app:customUrl="@{gifModel.preview.url}"
                 app:gifInfo="@{gifModel.preview}"
                 app:ratioWidth="@{ratioWidth}" />
@@ -65,6 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{Integer.toString(gifModel.original.width)}"
+                    android:clickable="true"
                     tools:text="450" />
 
                 <TextView
