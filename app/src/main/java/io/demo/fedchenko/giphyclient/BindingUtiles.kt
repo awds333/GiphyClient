@@ -3,7 +3,6 @@ package io.demo.fedchenko.giphyclient
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -12,9 +11,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget
+import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.model.GifProperties
-import io.demo.fedchenko.giphyclient.view.GifDialogFragment
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 
 @BindingAdapter("customUrl")
@@ -87,4 +86,15 @@ fun setScrollEndListener(recyclerView: RecyclerView, action: () -> Unit) {
             }
         }
     })
+}
+
+@BindingAdapter("onItemClickModel","onItemClickListener")
+fun setOpenGifViewDialog(
+    view: View,
+    model: GifModel,
+    listener: GifListAdapter.GifOnItemClickListener
+) {
+    view.setOnClickListener {
+        listener.onItemClick(view, model)
+    }
 }

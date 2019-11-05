@@ -38,7 +38,8 @@
                 layout="@layout/gif_image_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{()->clickListener.onItemClick(gifModel)}"
+                app:onItemClickModel="@{gifModel}"
+                app:onItemClickListener="@{clickListener}"
                 app:customUrl="@{gifModel.preview.url}"
                 app:gifInfo="@{gifModel.preview}"
                 app:ratioWidth="@{ratioWidth}" />

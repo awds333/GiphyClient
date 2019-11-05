@@ -2,6 +2,7 @@ package io.demo.fedchenko.giphyclient.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -15,7 +16,7 @@ class GifListAdapter(private val context: Context, private val span: Int) :
     RecyclerView.Adapter<GifViewHolder>() {
 
     interface GifOnItemClickListener {
-        fun onItemClick(item: GifModel)
+        fun onItemClick(view: View, item: GifModel)
     }
 
     private var gifModels: List<GifModel> = emptyList()

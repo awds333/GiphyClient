@@ -3,6 +3,7 @@ package io.demo.fedchenko.giphyclient.view
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -64,7 +65,7 @@ class MainActivity : AppCompatActivity() {
 
         adapter = GifListAdapter(this, spanCount)
         adapter.setOnItemClickListener(object : GifListAdapter.GifOnItemClickListener {
-            override fun onItemClick(item: GifModel) {
+            override fun onItemClick(view: View, item: GifModel) {
                 val dialog = GifDialogFragment.create(item)
                 val transition = supportFragmentManager.beginTransaction()
                 dialog.show(transition, "dialog")

@@ -34,7 +34,7 @@
 
 
         <include
-            android:id="@+id/include"
+            android:id="@+id/gifImageViewInclude"
             layout="@layout/gif_image_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -42,9 +42,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:customUrl="@{gifModel.original.url}"
-            app:ratioSize="@{gifModel.original}"
-            android:transitionName = "tr"/>
+            app:customUrl="@{gifModel.original.url}"/>
 
 
         <TextView
@@ -60,8 +58,8 @@
             android:shadowRadius="3"
             android:text="@{gifModel.userName}"
             android:textColor="@android:color/background_light"
-            app:layout_constraintBottom_toBottomOf="@+id/include"
-            app:layout_constraintEnd_toEndOf="@+id/include"
+            app:layout_constraintBottom_toBottomOf="@+id/gifImageViewInclude"
+            app:layout_constraintEnd_toEndOf="@+id/gifImageViewInclude"
             tools:text="@string/default_user" />
 
         <ImageButton
