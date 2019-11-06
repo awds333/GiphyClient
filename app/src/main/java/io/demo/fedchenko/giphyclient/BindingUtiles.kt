@@ -1,5 +1,6 @@
 package io.demo.fedchenko.giphyclient
 
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -12,8 +13,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget
-import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
-import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.model.GifProperties
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 
@@ -33,6 +32,12 @@ fun loadGif(view: View, url: String) {
                 animation: GlideAnimation<in GlideDrawable>?
             ) {
                 super.onResourceReady(resource, animation)
+                view.circlePogressBar.visibility = View.GONE
+                (view.context as AppCompatActivity).startPostponedEnterTransition()
+            }
+
+            override fun onLoadFailed(e: Exception?, errorDrawable: Drawable?) {
+                super.onLoadFailed(e, errorDrawable)
                 view.circlePogressBar.visibility = View.GONE
                 (view.context as AppCompatActivity).startPostponedEnterTransition()
             }
@@ -88,15 +93,4 @@ fun setScrollEndListener(recyclerView: RecyclerView, action: () -> Unit) {
             }
         }
     })
-}
-
-@BindingAdapter("onItemClickModel", "onItemClickListener")
-fun setOpenGifViewDialog(
-    view: View,
-    model: GifModel,
-    listener: GifListAdapter.GifOnItemClickListener
-) {
-    view.setOnClickListener {
-        listener.onItemClick(view, model)
-    }
 }

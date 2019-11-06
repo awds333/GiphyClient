@@ -1,6 +1,5 @@
 package io.demo.fedchenko.giphyclient.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,15 +11,11 @@ import io.demo.fedchenko.giphyclient.databinding.GifViewBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
 
 
-class GifListAdapter(private val context: Context, private val span: Int) :
+class GifListAdapter(private val span: Int) :
     RecyclerView.Adapter<GifViewHolder>() {
 
-    interface GifOnItemClickListener {
-        fun onItemClick(view: View, item: GifModel)
-    }
-
     private var gifModels: List<GifModel> = emptyList()
-    private var gifOnItemClickListener: GifOnItemClickListener? = null
+    private var gifOnItemClickListener: ((View, GifModel) -> Unit)? = null
 
     val gifModelsObserver = Observer<List<GifModel>> {
         val oldModels = gifModels
@@ -45,9 +40,8 @@ class GifListAdapter(private val context: Context, private val span: Int) :
         diff.dispatchUpdatesTo(this)
     }
 
-    fun setOnItemClickListener(listener: GifOnItemClickListener) {
+    fun setOnItemClickListener(listener: (View, GifModel) -> Unit) {
         gifOnItemClickListener = listener
-        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GifViewHolder {
@@ -67,8 +61,11 @@ class GifListAdapter(private val context: Context, private val span: Int) :
     }
 
     override fun onBindViewHolder(holder: GifViewHolder, position: Int) {
-        holder.binding.clickListener = gifOnItemClickListener
-        holder.binding.gifModel = gifModels[position]
+        val model = gifModels[position]
+        holder.binding.clickListener = View.OnClickListener {
+            gifOnItemClickListener?.invoke(it, model)
+        }
+        holder.binding.gifModel = model
         holder.binding.executePendingBindings()
     }
 }

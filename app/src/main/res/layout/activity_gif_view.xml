@@ -19,7 +19,7 @@
             type="io.demo.fedchenko.giphyclient.view.GifViewActivity.GifDistributor" />
 
         <variable
-            name="isTransitionEnded"
+            name="areButtonsVisible"
             type="Boolean" />
 
     </data>
@@ -45,6 +45,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             app:customUrl="@{gifModel.original.url}"
+            android:transitionName="t"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,7 +76,7 @@
             android:layout_height="wrap_content"
             android:elevation="6dp"
             android:onClick="@{()->infoViewer.showInfo()}"
-            android:visibility="@{isTransitionEnded ? View.VISIBLE : View.GONE}"
+            android:visibility="@{areButtonsVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="@+id/gifImageViewInclude"
             app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude"
             app:srcCompat="@android:drawable/ic_menu_manage" />
@@ -85,7 +86,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{()->distributor.share()}"
-            android:visibility="@{isTransitionEnded ? View.VISIBLE : View.GONE}"
+            android:visibility="@{areButtonsVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="@+id/gifImageViewInclude"
             app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude"
             app:srcCompat="@android:drawable/ic_menu_share" />

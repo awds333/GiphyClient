@@ -9,14 +9,14 @@ import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import io.demo.fedchenko.giphyclient.R
-import io.demo.fedchenko.giphyclient.databinding.FragmentDialogGifBinding
+import io.demo.fedchenko.giphyclient.databinding.ActivityGifViewBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
-import kotlinx.android.synthetic.main.fragment_dialog_gif.*
+import kotlinx.android.synthetic.main.activity_gif_view.*
 import kotlinx.android.synthetic.main.gif_image_view.*
 
 class GifViewActivity : AppCompatActivity() {
     private lateinit var model: GifModel
-    private lateinit var binding: FragmentDialogGifBinding
+    private lateinit var binding: ActivityGifViewBinding
 
     interface GifInfoViewer {
         fun showInfo()
@@ -26,10 +26,14 @@ class GifViewActivity : AppCompatActivity() {
         fun share()
     }
 
+    companion object GifViewActivityConstants {
+        const val MODEL = "model"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        intent.extras?.getString("model")?.also {
+        intent.extras?.getString(MODEL)?.also {
             model = Gson().fromJson(it, GifModel::class.java)
         } ?: return run {
             finish()
@@ -42,7 +46,6 @@ class GifViewActivity : AppCompatActivity() {
             ) {
                 if (names == null || sharedElements == null || gifImageViewInclude == null)
                     return
-                gifImageViewInclude.transitionName = model.original.url
                 sharedElements[names[0]] = gifImageViewInclude
             }
 
@@ -52,11 +55,11 @@ class GifViewActivity : AppCompatActivity() {
                 sharedElementSnapshots: MutableList<View>?
             ) {
                 super.onSharedElementEnd(sharedElementNames, sharedElements, sharedElementSnapshots)
-                binding.isTransitionEnded = true
+                    binding.areButtonsVisible = true
             }
         })
 
-        binding = DataBindingUtil.setContentView(this, R.layout.fragment_dialog_gif)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_gif_view)
 
         binding.apply {
             this.distributor = object : GifDistributor {
@@ -73,7 +76,7 @@ class GifViewActivity : AppCompatActivity() {
 
             this.gifModel = model
 
-            this.isTransitionEnded = false
+            this.areButtonsVisible = false
 
             this.infoViewer = object : GifInfoViewer {
                 override fun showInfo() {
@@ -87,7 +90,7 @@ class GifViewActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
-        binding.isTransitionEnded = true
+        binding.areButtonsVisible = true
     }
 
     override fun onDestroy() {

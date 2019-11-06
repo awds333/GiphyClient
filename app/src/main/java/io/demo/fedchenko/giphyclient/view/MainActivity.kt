@@ -4,21 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.gson.Gson
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.databinding.ActivityMainBinding
-import io.demo.fedchenko.giphyclient.model.GifModel
-import io.demo.fedchenko.giphyclient.viewmodel.ExceptionListener
-import io.demo.fedchenko.giphyclient.viewmodel.KeyboardListener
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -32,24 +27,20 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private val exceptionListener = object : ExceptionListener {
-        override fun handleException() {
-            Toast.makeText(
-                this@MainActivity,
-                io.demo.fedchenko.giphyclient.R.string.request_failed,
-                Toast.LENGTH_LONG
-            ).show()
-        }
+    private val exceptionListener = {
+        Toast.makeText(
+            this@MainActivity,
+            io.demo.fedchenko.giphyclient.R.string.request_failed,
+            Toast.LENGTH_LONG
+        ).show()
     }
-    private val keyboardListener = object : KeyboardListener {
-        override fun hideKeyboard() {
-            val view = currentFocus
-            view?.clearFocus()
-            (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
-                view?.windowToken,
-                0
-            )
-        }
+    private val keyboardListener: () -> Unit = {
+        val view = currentFocus
+        view?.clearFocus()
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
+            view?.windowToken,
+            0
+        )
     }
 
     private var scrollPosition = 0
@@ -73,24 +64,19 @@ class MainActivity : AppCompatActivity() {
         )
         recycler.layoutManager = layoutManager
 
-        adapter = GifListAdapter(this, spanCount)
-        adapter.setOnItemClickListener(object : GifListAdapter.GifOnItemClickListener {
-            override fun onItemClick(view: View, item: GifModel) {
-                view.transitionName = item.original.url
-                val activityOptionsCompat =
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        this@MainActivity,
-                        Pair(view, view.transitionName)
-                    )
-                val intent = Intent(this@MainActivity, GifViewActivity::class.java)
+        adapter = GifListAdapter(spanCount)
+        adapter.setOnItemClickListener { view, model ->
+            val activityOptionsCompat =
+                ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    this@MainActivity, view, "t"
+                )
+            val intent = Intent(this@MainActivity, GifViewActivity::class.java)
+                .putExtra(GifViewActivity.MODEL, Gson().toJson(model).toString())
 
-                intent.putExtra("model", Gson().toJson(item).toString())
+            binding.isActivityActive = false
 
-                binding.isActivityActive = false
-
-                startActivityForResult(intent, 0, activityOptionsCompat.toBundle())
-            }
-        })
+            startActivityForResult(intent, 0, activityOptionsCompat.toBundle())
+        }
 
         recycler.adapter = adapter
         recycler.post {

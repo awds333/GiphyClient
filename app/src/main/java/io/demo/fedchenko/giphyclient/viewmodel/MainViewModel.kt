@@ -7,14 +7,6 @@ import io.demo.fedchenko.giphyclient.repository.GifProvider
 import io.demo.fedchenko.giphyclient.repository.SearchGifLoader
 import io.demo.fedchenko.giphyclient.repository.TrendingGifLoader
 
-interface ExceptionListener {
-    fun handleException()
-}
-
-interface KeyboardListener {
-    fun hideKeyboard()
-}
-
 class MainViewModel(private var gifProvider: GifProvider) :
     ViewModel() {
 
@@ -23,20 +15,17 @@ class MainViewModel(private var gifProvider: GifProvider) :
     private val gifModelsLiveData: MutableLiveData<List<GifModel>> = MutableLiveData()
     private val isCloseButtonVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val isCloseButtonVisible: LiveData<Boolean> = isCloseButtonVisibleLiveData
-    private var exceptionListener: ExceptionListener? = null
-    private var keyboardListener: KeyboardListener? = null
+    private var exceptionListener: (() -> Unit)? = null
+    private var keyboardListener: (() -> Unit)? = null
 
-    private val loaderExceptionListener = object : GifLoader.ExceptionsListener {
-        override fun handleException(exception: Throwable) {
-            exceptionListener?.handleException()
-            isLoadingLiveData.value = false
-        }
+    private val loaderExceptionListener = { exception: Throwable ->
+        exceptionListener?.invoke()
+        isLoadingLiveData.value = false
     }
-    private val loaderModelsListListener = object : GifLoader.GifModelsListListener {
-        override fun updateList(models: List<GifModel>) {
-            gifModelsLiveData.value = models
-            isLoadingLiveData.value = false
-        }
+    private val loaderModelsListListener = { models: List<GifModel> ->
+        gifModelsLiveData.value = models
+        isLoadingLiveData.value = false
+
     }
 
     private var lastTerm = ""
@@ -60,7 +49,7 @@ class MainViewModel(private var gifProvider: GifProvider) :
         if (trimTerm == "" || trimTerm == lastTerm)
             return
         lastTerm = trimTerm
-        keyboardListener?.hideKeyboard()
+        keyboardListener?.invoke()
         gifLoader.close()
         gifLoader = SearchGifLoader(gifProvider, trimTerm)
         subscribeToLoader()
@@ -76,7 +65,7 @@ class MainViewModel(private var gifProvider: GifProvider) :
         if (lastTerm.isNotEmpty())
             searchText.value = ""
         lastTerm = ""
-        keyboardListener?.hideKeyboard()
+        keyboardListener?.invoke()
         gifLoader.close()
         gifLoader = TrendingGifLoader(gifProvider)
         subscribeToLoader()
@@ -85,15 +74,15 @@ class MainViewModel(private var gifProvider: GifProvider) :
     private fun subscribeToLoader() {
         gifLoader.setGifModelsListListener(loaderModelsListListener)
         gifLoader.setExceptionsListener(loaderExceptionListener)
-        gifLoader.loadMoreGifs()
         isLoadingLiveData.value = true
         gifModelsLiveData.value = emptyList()
+        gifLoader.loadMoreGifs()
     }
 
     fun getMoreGifs() {
         if (isLoadingLiveData.value != true) {
-            gifLoader.loadMoreGifs()
             isLoadingLiveData.value = true
+            gifLoader.loadMoreGifs()
         }
     }
 
@@ -101,7 +90,7 @@ class MainViewModel(private var gifProvider: GifProvider) :
         gifModelsLiveData.observe(lifecycleOwner, observer)
     }
 
-    fun registerExceptionsListener(listener: ExceptionListener) {
+    fun registerExceptionsListener(listener: (() -> Unit)) {
         exceptionListener = listener
     }
 
@@ -109,7 +98,7 @@ class MainViewModel(private var gifProvider: GifProvider) :
         exceptionListener = null
     }
 
-    fun registerKeyboardListener(listener: KeyboardListener) {
+    fun registerKeyboardListener(listener: (() -> Unit)) {
         keyboardListener = listener
     }
 

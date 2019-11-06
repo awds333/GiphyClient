@@ -9,17 +9,9 @@ import io.reactivex.schedulers.Schedulers
 
 abstract class GifLoader {
 
-    interface ExceptionsListener {
-        fun handleException(exception: Throwable)
-    }
+    private var gifModelsListListener: ((List<GifModel>)->Unit)? = null
 
-    interface GifModelsListListener {
-        fun updateList(models: List<GifModel>)
-    }
-
-    private var gifModelsListListener: GifModelsListListener? = null
-
-    private var exceptionsListener: ExceptionsListener? = null
+    private var exceptionsListener: ((Throwable)->Unit)? = null
 
     private var disposable: Disposable = Disposables.empty()
 
@@ -32,9 +24,9 @@ abstract class GifLoader {
             .subscribe(
                 {
                     loadedGifModels = loadedGifModels + it
-                    gifModelsListListener?.updateList(loadedGifModels)
+                    gifModelsListListener?.invoke(loadedGifModels)
                 }, {
-                    exceptionsListener?.handleException(it)
+                    exceptionsListener?.invoke(it)
                 }
             )
     }
@@ -45,11 +37,11 @@ abstract class GifLoader {
         disposable.dispose()
     }
 
-    fun setExceptionsListener(listener: ExceptionsListener){
+    fun setExceptionsListener(listener: (Throwable)->Unit){
         exceptionsListener = listener
     }
 
-    fun setGifModelsListListener(listener: GifModelsListListener){
+    fun setGifModelsListListener(listener: (List<GifModel>)->Unit){
         gifModelsListListener = listener
     }
 }

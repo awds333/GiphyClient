@@ -9,10 +9,10 @@ class ResponseModel {
 
 class GifNotParsedModel {
     @SerializedName("images")
-    val images: Images = Images()
+    val images: Images? = null
 
     @SerializedName("user")
-    val user: User = User()
+    val user: User? = null
 
     @SerializedName("title")
     val title: String = ""
@@ -23,10 +23,10 @@ class GifNotParsedModel {
 
 class Images {
     @SerializedName("original")
-    val gifInfo: GifInfo = GifInfo()
+    val gifInfo: GifInfo? = null
 
     @SerializedName("preview_gif")
-    val previewGifInfo: GifInfo = GifInfo()
+    val previewGifInfo: GifInfo? = null
 }
 
 class GifInfo {
