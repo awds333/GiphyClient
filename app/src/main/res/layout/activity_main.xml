@@ -12,6 +12,10 @@
         <variable
             name="mainViewModel"
             type="io.demo.fedchenko.giphyclient.viewmodel.MainViewModel" />
+
+        <variable
+            name="isActivityActive"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -95,6 +99,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:drawable/ic_search_category_default" />
+
+        <FrameLayout
+            android:id="@+id/mainActivityH"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#80000000"
+            android:clickable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="@{isActivityActive ? View.GONE : View.VISIBLE}"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

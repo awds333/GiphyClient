@@ -12,11 +12,11 @@
 
         <variable
             name="infoViewer"
-            type="io.demo.fedchenko.giphyclient.view.GifDialogFragment.GifInfoViewer" />
+            type="io.demo.fedchenko.giphyclient.view.GifViewActivity.GifInfoViewer" />
 
         <variable
             name="distributor"
-            type="io.demo.fedchenko.giphyclient.view.GifDialogFragment.GifDistributor" />
+            type="io.demo.fedchenko.giphyclient.view.GifViewActivity.GifDistributor" />
 
         <variable
             name="isTransitionEnded"
@@ -28,6 +28,7 @@
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#80000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,6 +40,10 @@
             layout="@layout/gif_image_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             app:customUrl="@{gifModel.original.url}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -64,7 +69,7 @@
             app:layout_constraintEnd_toEndOf="@+id/gifImageViewInclude"
             tools:text="@string/default_user" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/gifInfoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -75,7 +80,7 @@
             app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude"
             app:srcCompat="@android:drawable/ic_menu_manage" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/imageButton2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

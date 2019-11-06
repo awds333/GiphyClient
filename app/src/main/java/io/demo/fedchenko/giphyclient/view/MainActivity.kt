@@ -29,6 +29,9 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModel()
     private lateinit var adapter: GifListAdapter
     private lateinit var layoutManager: StaggeredGridLayoutManager
+
+    private lateinit var binding: ActivityMainBinding
+
     private val exceptionListener = object : ExceptionListener {
         override fun handleException() {
             Toast.makeText(
@@ -53,13 +56,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding: ActivityMainBinding =
+        binding =
             DataBindingUtil.setContentView(
                 this,
                 io.demo.fedchenko.giphyclient.R.layout.activity_main
             )
         binding.lifecycleOwner = this
         binding.mainViewModel = mainViewModel
+        binding.isActivityActive = true
 
         val spanCount =
             if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 3
@@ -82,7 +86,9 @@ class MainActivity : AppCompatActivity() {
 
                 intent.putExtra("model", Gson().toJson(item).toString())
 
-                startActivity(intent, activityOptionsCompat.toBundle())
+                binding.isActivityActive = false
+
+                startActivityForResult(intent, 0, activityOptionsCompat.toBundle())
             }
         })
 
@@ -93,15 +99,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 0)
+            binding.isActivityActive = true
+    }
+
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
-        scrollPosition = savedInstanceState!!.getInt("first_visible", 0)
+        savedInstanceState?.also {
+            binding.isActivityActive = it.getBoolean("isActivityActive", true)
+            scrollPosition = it.getInt("first_visible", 0)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
-        val firstVisible = layoutManager.findFirstVisibleItemPositions(IntArray(3))
-        if (firstVisible.isNotEmpty())
-            outState!!.putInt("first_visible", firstVisible[0])
+        outState?.apply {
+            val firstVisible = layoutManager.findFirstVisibleItemPositions(IntArray(3))
+            if (firstVisible.isNotEmpty())
+                this.putInt("first_visible", firstVisible[0])
+            this.putBoolean("isActivityActive", binding.isActivityActive ?: true)
+        }
         super.onSaveInstanceState(outState)
     }
 

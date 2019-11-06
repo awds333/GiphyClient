@@ -3,6 +3,7 @@ package io.demo.fedchenko.giphyclient
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -33,6 +34,7 @@ fun loadGif(view: View, url: String) {
             ) {
                 super.onResourceReady(resource, animation)
                 view.circlePogressBar.visibility = View.GONE
+                (view.context as AppCompatActivity).startPostponedEnterTransition()
             }
         })
 }

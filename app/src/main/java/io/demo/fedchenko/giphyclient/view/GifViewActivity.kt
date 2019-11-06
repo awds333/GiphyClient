@@ -18,8 +18,22 @@ class GifViewActivity : AppCompatActivity() {
     private lateinit var model: GifModel
     private lateinit var binding: FragmentDialogGifBinding
 
+    interface GifInfoViewer {
+        fun showInfo()
+    }
+
+    interface GifDistributor {
+        fun share()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        intent.extras?.getString("model")?.also {
+            model = Gson().fromJson(it, GifModel::class.java)
+        } ?: return run {
+            finish()
+        }
 
         setEnterSharedElementCallback(object : SharedElementCallback() {
             override fun onMapSharedElements(
@@ -42,33 +56,33 @@ class GifViewActivity : AppCompatActivity() {
             }
         })
 
-        intent.extras?.getString("model")?.also {
-            model = Gson().fromJson(it, GifModel::class.java)
-        } ?: return run {
-            finish()
-        }
-
         binding = DataBindingUtil.setContentView(this, R.layout.fragment_dialog_gif)
-        binding.distributor = object : GifDialogFragment.GifDistributor {
-            override fun share() {
-                ShareCompat.IntentBuilder.from(this@GifViewActivity)
-                    .setType("text/plain")
-                    .setChooserTitle("Share Gif")
-                    .setText(model.original.url)
-                    .startChooser()
+
+        binding.apply {
+            this.distributor = object : GifDistributor {
+                override fun share() {
+                    ShareCompat.IntentBuilder.from(this@GifViewActivity)
+                        .setType("text/plain")
+                        .setChooserTitle("Share Gif")
+                        .setText(model.original.url)
+                        .startChooser()
+                }
+            }
+
+            postponeEnterTransition()
+
+            this.gifModel = model
+
+            this.isTransitionEnded = false
+
+            this.infoViewer = object : GifInfoViewer {
+                override fun showInfo() {
+                    val infoDialog: GifInfoDialogFragment = GifInfoDialogFragment.create(model)
+                    infoDialog.show(supportFragmentManager, "info_dialog")
+                }
             }
         }
 
-        binding.gifModel = model
-
-        binding.isTransitionEnded = false
-
-        binding.infoViewer = object : GifDialogFragment.GifInfoViewer {
-            override fun showInfo() {
-                val infoDialog: GifInfoDialogFragment = GifInfoDialogFragment.create(model)
-                infoDialog.show(supportFragmentManager, "info_dialog")
-            }
-        }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
