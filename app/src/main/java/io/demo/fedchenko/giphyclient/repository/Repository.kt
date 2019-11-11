@@ -9,8 +9,7 @@ class Repository(private val giphyKey: String, private val giphyAPI: GiphyAPI) :
 
     private fun fromRaw(notParsedModel: GifNotParsedModel): GifModel? {
 
-        notParsedModel.images ?: return null
-        val original = notParsedModel.images.gifInfo?.properties() ?: return null
+        val original = notParsedModel.images?.gifInfo?.properties() ?: return null
         val preview = notParsedModel.images.previewGifInfo?.properties() ?: original
         val name = notParsedModel.user?.name ?: ""
 

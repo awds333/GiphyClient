@@ -22,6 +22,10 @@
             name="areButtonsVisible"
             type="Boolean" />
 
+        <variable
+            name="placeHolder"
+            type="android.graphics.drawable.Drawable" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,11 +44,9 @@
             layout="@layout/gif_image_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            app:customUrl="@{gifModel.original.url}"
+            android:layout_margin="8dp"
+            app:customUrl="@{areButtonsVisible ? gifModel.original.url : gifModel.preview.url}"
+            app:placeHolder="@{placeHolder}"
             android:transitionName="t"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

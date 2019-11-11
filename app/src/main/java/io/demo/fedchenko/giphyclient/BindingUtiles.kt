@@ -16,16 +16,18 @@ import com.bumptech.glide.request.target.GlideDrawableImageViewTarget
 import io.demo.fedchenko.giphyclient.model.GifProperties
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 
-@BindingAdapter("customUrl")
-fun loadGif(view: View, url: String) {
+@BindingAdapter("customUrl", "placeHolder")
+fun loadGif(view: View, url: String, placeholder: Drawable? = null) {
     if (view.gifImageView == null || view.circlePogressBar == null)
         return
     Glide.clear(view.gifImageView)
     view.circlePogressBar.visibility = View.VISIBLE
-    Glide.with(view.context)
+    val request = Glide.with(view.context)
         .load(url)
         .error(android.R.drawable.ic_delete)
-        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+    placeholder?.also { request.placeholder(it) }
+
+    request.diskCacheStrategy(DiskCacheStrategy.SOURCE)
         .into(object : GlideDrawableImageViewTarget(view.gifImageView) {
             override fun onResourceReady(
                 resource: GlideDrawable?,

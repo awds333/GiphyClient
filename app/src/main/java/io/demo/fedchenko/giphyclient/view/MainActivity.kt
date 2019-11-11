@@ -8,6 +8,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.view.drawToBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -70,10 +71,16 @@ class MainActivity : AppCompatActivity() {
                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                     this@MainActivity, view, "t"
                 )
+            val bitmap = view.drawToBitmap()
+
+            view.invalidate()
+
             val intent = Intent(this@MainActivity, GifViewActivity::class.java)
                 .putExtra(GifViewActivity.MODEL, Gson().toJson(model).toString())
 
             binding.isActivityActive = false
+
+            GifViewActivity.setBitmap(bitmap)
 
             startActivityForResult(intent, 0, activityOptionsCompat.toBundle())
         }
