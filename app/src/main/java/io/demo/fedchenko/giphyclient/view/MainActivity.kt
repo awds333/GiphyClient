@@ -2,7 +2,9 @@ package io.demo.fedchenko.giphyclient.view
 
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.Configuration
+import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.databinding.ActivityMainBinding
+import io.demo.fedchenko.giphyclient.receiver.NetworkStateBroadcastReceiver
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -26,6 +29,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var layoutManager: StaggeredGridLayoutManager
 
     private lateinit var binding: ActivityMainBinding
+
+    private val noConnectionDialog = NoConnectionDialog().apply {
+        isCancelable = false
+    }
+
+    private var intentFilter = IntentFilter(CONNECTIVITY_ACTION)
+    private val receiver = NetworkStateBroadcastReceiver(onConnected = {
+        if (noConnectionDialog.isResumed)
+            noConnectionDialog.dismiss()
+    }, onDisconnected = {
+        if (!noConnectionDialog.isResumed)
+            noConnectionDialog.show(supportFragmentManager, "")
+    })
 
     private val exceptionListener = {
         Toast.makeText(
@@ -66,15 +82,24 @@ class MainActivity : AppCompatActivity() {
 
         adapter = GifListAdapter(spanCount)
         adapter.setOnItemClickListener { view, model ->
+            if (!view.isLaidOut)
+                return@setOnItemClickListener
             val activityOptionsCompat =
                 ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    this@MainActivity, view, "t"
+                    this@MainActivity, view, "gifImageView"
                 )
+
             val bitmap = view.drawToBitmap()
 
             binding.isActivityActive = false
 
-            GifViewActivity.start(model,bitmap,this@MainActivity,activityOptionsCompat.toBundle())
+            unregisterReceiver(receiver)
+            GifViewActivity.start(
+                model,
+                bitmap,
+                this@MainActivity,
+                activityOptionsCompat.toBundle()
+            )
         }
 
         recycler.adapter = adapter
@@ -82,11 +107,15 @@ class MainActivity : AppCompatActivity() {
             mainViewModel.observeGifModels(this, adapter.gifModelsObserver)
             recycler.scrollToPosition(scrollPosition)
         }
+
+        registerReceiver(receiver, intentFilter)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == GifViewActivity.REQUEST_CODE)
+        if (requestCode == GifViewActivity.REQUEST_CODE) {
             binding.isActivityActive = true
+            registerReceiver(receiver,intentFilter)
+        }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
@@ -117,5 +146,10 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         mainViewModel.removeExceptionListener()
         mainViewModel.removeKeyboardListener()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
     }
 }

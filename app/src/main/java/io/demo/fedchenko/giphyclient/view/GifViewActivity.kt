@@ -24,14 +24,6 @@ class GifViewActivity : AppCompatActivity() {
     private lateinit var model: GifModel
     private lateinit var binding: ActivityGifViewBinding
 
-    interface GifInfoViewer {
-        fun showInfo()
-    }
-
-    interface GifDistributor {
-        fun share()
-    }
-
     companion object {
         const val MODEL = "model"
         const val REQUEST_CODE = 375
@@ -70,7 +62,6 @@ class GifViewActivity : AppCompatActivity() {
                         binding.areButtonsVisible = true
                     }
                 })
-                sharedElements[names[0]] = gifImageViewInclude
             }
         })
 
@@ -80,17 +71,13 @@ class GifViewActivity : AppCompatActivity() {
         )
 
         binding.apply {
-            distributor = object : GifDistributor {
-                override fun share() {
-                    ShareCompat.IntentBuilder.from(this@GifViewActivity)
-                        .setType("text/plain")
-                        .setChooserTitle("Share Gif")
-                        .setText(model.original.url)
-                        .startChooser()
-                }
+            distributor = View.OnClickListener {
+                ShareCompat.IntentBuilder.from(this@GifViewActivity)
+                    .setType("text/plain")
+                    .setChooserTitle("Share Gif")
+                    .setText(model.original.url)
+                    .startChooser()
             }
-
-            postponeEnterTransition()
 
             binding.placeHolder = bitmap?.toDrawable(resources)
 
@@ -98,11 +85,13 @@ class GifViewActivity : AppCompatActivity() {
 
             areButtonsVisible = false
 
-            infoViewer = object : GifInfoViewer {
-                override fun showInfo() {
-                    val infoDialog: GifInfoDialogFragment = GifInfoDialogFragment.create(model)
-                    infoDialog.show(supportFragmentManager, "info_dialog")
-                }
+            infoViewer = View.OnClickListener {
+                val infoDialog: GifInfoDialogFragment = GifInfoDialogFragment.create(model)
+                infoDialog.show(supportFragmentManager, "info_dialog")
+            }
+
+            canceler = View.OnClickListener {
+                onBackPressed()
             }
         }
 

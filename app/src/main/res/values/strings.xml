@@ -8,4 +8,5 @@
     <string name="title">Title</string>
     <string name="bytes">byte</string>
     <string name="giphy_key">g0huuU56R74KkSQCYLdzfqCDyr4JmssE</string>
+    <string name="no_internet_connection">No Internet Connection(</string>
 </resources>

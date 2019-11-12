@@ -98,7 +98,7 @@
             android:onClick="@{()->mainViewModel.search()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/ic_search_category_default" />
+            app:srcCompat="@android:drawable/ic_search_category_default"/>
 
         <FrameLayout
             android:id="@+id/mainActivityH"

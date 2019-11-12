@@ -4,7 +4,7 @@
     package="io.demo.fedchenko.giphyclient">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".App"
@@ -23,7 +23,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.GifViewActivity" android:theme="@style/TransparentTheme"/>
+            android:name=".view.GifViewActivity"
+            android:theme="@style/TransparentTheme" />
     </application>
 
 </manifest>

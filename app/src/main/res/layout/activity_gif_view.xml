@@ -12,11 +12,15 @@
 
         <variable
             name="infoViewer"
-            type="io.demo.fedchenko.giphyclient.view.GifViewActivity.GifInfoViewer" />
+            type="android.view.View.OnClickListener" />
 
         <variable
             name="distributor"
-            type="io.demo.fedchenko.giphyclient.view.GifViewActivity.GifDistributor" />
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="canceler"
+            type="android.view.View.OnClickListener" />
 
         <variable
             name="areButtonsVisible"
@@ -36,7 +40,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:clickable="true"
+        android:onClick="@{canceler}">
 
 
         <include
@@ -45,14 +51,13 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="8dp"
-            app:customUrl="@{areButtonsVisible ? gifModel.original.url : gifModel.preview.url}"
+            app:customUrl="@{areButtonsVisible ? gifModel.original.url : null}"
             app:placeHolder="@{placeHolder}"
-            android:transitionName="t"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:ratioSize="@{gifModel.original}" />
+            app:ratioSize="@{gifModel.original}"/>
 
 
         <TextView
@@ -77,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:elevation="6dp"
-            android:onClick="@{()->infoViewer.showInfo()}"
+            android:onClick="@{infoViewer}"
             android:visibility="@{areButtonsVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="@+id/gifImageViewInclude"
             app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude"
@@ -87,7 +92,7 @@
             android:id="@+id/imageButton2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{()->distributor.share()}"
+            android:onClick="@{distributor}"
             android:visibility="@{areButtonsVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="@+id/gifImageViewInclude"
             app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude"

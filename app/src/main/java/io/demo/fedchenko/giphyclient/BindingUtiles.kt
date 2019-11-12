@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -17,31 +16,34 @@ import io.demo.fedchenko.giphyclient.model.GifProperties
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 
 @BindingAdapter("customUrl", "placeHolder")
-fun loadGif(view: View, url: String, placeholder: Drawable? = null) {
+fun loadGif(view: View, url: String?, placeholder: Drawable? = null) {
     if (view.gifImageView == null || view.circlePogressBar == null)
         return
+    if(url==null){
+        view.gifImageView.setImageDrawable(placeholder)
+        return
+    }
     Glide.clear(view.gifImageView)
     view.circlePogressBar.visibility = View.VISIBLE
     val request = Glide.with(view.context)
         .load(url)
         .error(android.R.drawable.ic_delete)
+        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+
     placeholder?.also { request.placeholder(it) }
 
-    request.diskCacheStrategy(DiskCacheStrategy.SOURCE)
-        .into(object : GlideDrawableImageViewTarget(view.gifImageView) {
+    request.into(object : GlideDrawableImageViewTarget(view.gifImageView) {
             override fun onResourceReady(
                 resource: GlideDrawable?,
                 animation: GlideAnimation<in GlideDrawable>?
             ) {
                 super.onResourceReady(resource, animation)
                 view.circlePogressBar.visibility = View.GONE
-                (view.context as AppCompatActivity).startPostponedEnterTransition()
             }
 
             override fun onLoadFailed(e: Exception?, errorDrawable: Drawable?) {
                 super.onLoadFailed(e, errorDrawable)
                 view.circlePogressBar.visibility = View.GONE
-                (view.context as AppCompatActivity).startPostponedEnterTransition()
             }
         })
 }
