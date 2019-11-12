@@ -12,7 +12,6 @@ import androidx.core.view.drawToBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.gson.Gson
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.databinding.ActivityMainBinding
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
@@ -73,16 +72,9 @@ class MainActivity : AppCompatActivity() {
                 )
             val bitmap = view.drawToBitmap()
 
-            view.invalidate()
-
-            val intent = Intent(this@MainActivity, GifViewActivity::class.java)
-                .putExtra(GifViewActivity.MODEL, Gson().toJson(model).toString())
-
             binding.isActivityActive = false
 
-            GifViewActivity.setBitmap(bitmap)
-
-            startActivityForResult(intent, 0, activityOptionsCompat.toBundle())
+            GifViewActivity.start(model,bitmap,this@MainActivity,activityOptionsCompat.toBundle())
         }
 
         recycler.adapter = adapter
@@ -93,7 +85,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == 0)
+        if (requestCode == GifViewActivity.REQUEST_CODE)
             binding.isActivityActive = true
     }
 

@@ -1,5 +1,8 @@
 package io.demo.fedchenko.giphyclient.view
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.transition.Transition
@@ -11,7 +14,6 @@ import androidx.core.app.SharedElementCallback
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
-import com.google.gson.Gson
 import io.demo.fedchenko.giphyclient.databinding.ActivityGifViewBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
 import kotlinx.android.synthetic.main.activity_gif_view.*
@@ -32,20 +34,24 @@ class GifViewActivity : AppCompatActivity() {
 
     companion object {
         const val MODEL = "model"
-        const val DRAWABLE = "drawable"
+        const val REQUEST_CODE = 375
 
         private var bitmap: Bitmap? = null
 
-        fun setBitmap(bitmap: Bitmap){
+        fun start(model: GifModel, bitmap: Bitmap, context: Context, bundle: Bundle?) {
             this.bitmap = bitmap
+            val intent = Intent(context, GifViewActivity::class.java)
+                .putExtra(MODEL, model)
+
+            (context as Activity).startActivityForResult(intent, REQUEST_CODE, bundle)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        intent.extras?.getString(MODEL)?.also {
-            model = Gson().fromJson(it, GifModel::class.java)
+        intent.extras?.getParcelable<GifModel>(MODEL)?.also {
+            model = it
         } ?: return run {
             finish()
         }
