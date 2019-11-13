@@ -1,7 +1,8 @@
 package io.demo.fedchenko.giphyclient.retrofit
 
 import io.demo.fedchenko.giphyclient.model.ResponseModel
-import io.reactivex.Single
+import kotlinx.coroutines.Deferred
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -13,7 +14,7 @@ interface GiphyAPI {
         , @Query("offset") offset: Int
         , @Query("api_key") key: String
     )
-            : Single<ResponseModel>
+            : Deferred<Response<ResponseModel>>
 
     @GET("trending")
     fun getTrendingGifs(
@@ -21,5 +22,5 @@ interface GiphyAPI {
         , @Query("offset") offset: Int
         , @Query("api_key") key: String
     )
-            : Single<ResponseModel>
+            : Deferred<Response<ResponseModel>>
 }

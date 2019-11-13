@@ -6,6 +6,10 @@ import io.demo.fedchenko.giphyclient.repository.GifLoader
 import io.demo.fedchenko.giphyclient.repository.GifProvider
 import io.demo.fedchenko.giphyclient.repository.SearchGifLoader
 import io.demo.fedchenko.giphyclient.repository.TrendingGifLoader
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class MainViewModel(private var gifProvider: GifProvider) :
     ViewModel() {
@@ -18,21 +22,13 @@ class MainViewModel(private var gifProvider: GifProvider) :
     private var exceptionListener: (() -> Unit)? = null
     private var keyboardListener: (() -> Unit)? = null
 
-    private val loaderExceptionListener = { exception: Throwable ->
-        exceptionListener?.invoke()
-        isLoadingLiveData.value = false
-    }
-    private val loaderModelsListListener = { models: List<GifModel> ->
-        gifModelsLiveData.value = models
-        isLoadingLiveData.value = false
-
-    }
-
     private var lastTerm = ""
 
     private var gifLoader: GifLoader = TrendingGifLoader(gifProvider)
 
     val searchText: MutableLiveData<String> = MutableLiveData()
+
+    private val scope = CoroutineScope(Dispatchers.Main)
 
     init {
         isLoadingLiveData.value = false
@@ -50,7 +46,6 @@ class MainViewModel(private var gifProvider: GifProvider) :
             return
         lastTerm = trimTerm
         keyboardListener?.invoke()
-        gifLoader.close()
         gifLoader = SearchGifLoader(gifProvider, trimTerm)
         subscribeToLoader()
     }
@@ -66,23 +61,25 @@ class MainViewModel(private var gifProvider: GifProvider) :
             searchText.value = ""
         lastTerm = ""
         keyboardListener?.invoke()
-        gifLoader.close()
         gifLoader = TrendingGifLoader(gifProvider)
         subscribeToLoader()
     }
 
     private fun subscribeToLoader() {
-        gifLoader.setGifModelsListListener(loaderModelsListListener)
-        gifLoader.setExceptionsListener(loaderExceptionListener)
-        isLoadingLiveData.value = true
+        isLoadingLiveData.value = false
+        //scope.cancel()
         gifModelsLiveData.value = emptyList()
-        gifLoader.loadMoreGifs()
+        getMoreGifs()
     }
 
     fun getMoreGifs() {
         if (isLoadingLiveData.value != true) {
             isLoadingLiveData.value = true
-            gifLoader.loadMoreGifs()
+            scope.launch {
+                val gifs = gifLoader.loadMoreGifs()
+                gifModelsLiveData.value = gifs
+                isLoadingLiveData.value = false
+            }
         }
     }
 
@@ -108,6 +105,6 @@ class MainViewModel(private var gifProvider: GifProvider) :
 
     override fun onCleared() {
         super.onCleared()
-        gifLoader.close()
+        scope.cancel()
     }
 }

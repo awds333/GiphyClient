@@ -1,32 +1,32 @@
 package io.demo.fedchenko.giphyclient.di
 
-import io.demo.fedchenko.giphyclient.repository.Repository
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import io.demo.fedchenko.giphyclient.repository.GifRepository
 import io.demo.fedchenko.giphyclient.retrofit.GiphyAPI
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
-import io.reactivex.schedulers.Schedulers
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 val viewModelModule: Module = module {
-    viewModel { MainViewModel(get<Repository>()) }
+    viewModel { MainViewModel(get<GifRepository>()) }
 }
 
 val repositoryModule: Module = module {
     single {
-        Repository(
+        GifRepository(
             getProperty("qiphy_key"),
             get()
         )
     }
     single {
         Retrofit.Builder()
-            .baseUrl(getProperty<String>("base_url"))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+            .baseUrl(getProperty("base_url",""))
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .addConverterFactory(GsonConverterFactory.create())
-            .build().create(GiphyAPI::class.java)
+            .build()
+            .create(GiphyAPI::class.java)
     }
 }
