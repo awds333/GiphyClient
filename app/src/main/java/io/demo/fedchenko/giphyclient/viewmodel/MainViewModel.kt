@@ -63,7 +63,7 @@ class MainViewModel(private var gifProvider: GifProvider) :
             getTrending()
     }
 
-    fun getTrending() {
+    private fun getTrending() {
         if (lastTerm.isNotEmpty())
             searchText.value = ""
         lastTerm = ""
