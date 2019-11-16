@@ -104,13 +104,13 @@
             android:id="@+id/mainActivityH"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="#80000000"
+            android:background="#00000000"
             android:clickable="true"
+            android:visibility="@{isActivityActive ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:visibility="@{isActivityActive ? View.GONE : View.VISIBLE}"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

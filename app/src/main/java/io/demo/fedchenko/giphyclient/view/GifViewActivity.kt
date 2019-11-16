@@ -94,7 +94,6 @@ class GifViewActivity : AppCompatActivity() {
                 onBackPressed()
             }
         }
-
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {

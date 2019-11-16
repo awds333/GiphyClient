@@ -92,7 +92,6 @@ class MainActivity : AppCompatActivity() {
             val bitmap = view.drawToBitmap()
 
             binding.isActivityActive = false
-
             unregisterReceiver(receiver)
             GifViewActivity.start(
                 model,

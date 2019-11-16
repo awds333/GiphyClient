@@ -8,7 +8,7 @@ import io.demo.fedchenko.giphyclient.repository.SearchGifLoader
 import io.demo.fedchenko.giphyclient.repository.TrendingGifLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class MainViewModel(private var gifProvider: GifProvider) :
@@ -29,6 +29,7 @@ class MainViewModel(private var gifProvider: GifProvider) :
     val searchText: MutableLiveData<String> = MutableLiveData()
 
     private val scope = CoroutineScope(Dispatchers.Main)
+    private var job: Job? = null
 
     init {
         isLoadingLiveData.value = false
@@ -67,7 +68,7 @@ class MainViewModel(private var gifProvider: GifProvider) :
 
     private fun subscribeToLoader() {
         isLoadingLiveData.value = false
-        //scope.cancel()
+        job?.cancel()
         gifModelsLiveData.value = emptyList()
         getMoreGifs()
     }
@@ -75,7 +76,7 @@ class MainViewModel(private var gifProvider: GifProvider) :
     fun getMoreGifs() {
         if (isLoadingLiveData.value != true) {
             isLoadingLiveData.value = true
-            scope.launch {
+            job = scope.launch {
                 val gifs = gifLoader.loadMoreGifs()
                 gifModelsLiveData.value = gifs
                 isLoadingLiveData.value = false
@@ -105,6 +106,6 @@ class MainViewModel(private var gifProvider: GifProvider) :
 
     override fun onCleared() {
         super.onCleared()
-        scope.cancel()
+        job?.cancel()
     }
 }
