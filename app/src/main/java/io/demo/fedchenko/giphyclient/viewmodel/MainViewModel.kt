@@ -19,6 +19,9 @@ class MainViewModel(private var gifProvider: GifProvider) :
     private val gifModelsLiveData: MutableLiveData<List<GifModel>> = MutableLiveData()
     private val isCloseButtonVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val isCloseButtonVisible: LiveData<Boolean> = isCloseButtonVisibleLiveData
+    private val previousTermsLiveData: MutableLiveData<List<String>> = MutableLiveData()
+    val previousTerms: LiveData<List<String>> = previousTermsLiveData
+
     private var exceptionListener: (() -> Unit)? = null
     private var keyboardListener: (() -> Unit)? = null
 
@@ -35,6 +38,7 @@ class MainViewModel(private var gifProvider: GifProvider) :
         isLoadingLiveData.value = false
         gifModelsLiveData.value = emptyList()
         isCloseButtonVisibleLiveData.value = false
+        previousTermsLiveData.value = emptyList()
         searchText.observeForever {
             isCloseButtonVisibleLiveData.value = it.isNotEmpty()
         }
@@ -43,11 +47,13 @@ class MainViewModel(private var gifProvider: GifProvider) :
 
     fun search() {
         val trimTerm = searchText.value?.trim() ?: return
-        if (trimTerm == "" || trimTerm == lastTerm)
+        if (trimTerm == "")
             return
         lastTerm = trimTerm
         keyboardListener?.invoke()
         gifLoader = SearchGifLoader(gifProvider, trimTerm)
+        if (previousTermsLiveData.value?.contains(trimTerm) != true)
+            previousTermsLiveData.value = (previousTermsLiveData.value ?: emptyList()) + trimTerm
         subscribeToLoader()
     }
 

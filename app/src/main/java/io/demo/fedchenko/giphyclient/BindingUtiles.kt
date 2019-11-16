@@ -1,8 +1,11 @@
 package io.demo.fedchenko.giphyclient
 
+import android.R
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +22,7 @@ import kotlinx.android.synthetic.main.gif_image_view.view.*
 fun loadGif(view: View, url: String?, placeholder: Drawable? = null) {
     if (view.gifImageView == null || view.circlePogressBar == null)
         return
-    if(url==null){
+    if (url == null) {
         view.gifImageView.setImageDrawable(placeholder)
         return
     }
@@ -33,19 +36,19 @@ fun loadGif(view: View, url: String?, placeholder: Drawable? = null) {
     placeholder?.also { request.placeholder(it) }
 
     request.into(object : GlideDrawableImageViewTarget(view.gifImageView) {
-            override fun onResourceReady(
-                resource: GlideDrawable?,
-                animation: GlideAnimation<in GlideDrawable>?
-            ) {
-                super.onResourceReady(resource, animation)
-                view.circlePogressBar.visibility = View.GONE
-            }
+        override fun onResourceReady(
+            resource: GlideDrawable?,
+            animation: GlideAnimation<in GlideDrawable>?
+        ) {
+            super.onResourceReady(resource, animation)
+            view.circlePogressBar.visibility = View.GONE
+        }
 
-            override fun onLoadFailed(e: Exception?, errorDrawable: Drawable?) {
-                super.onLoadFailed(e, errorDrawable)
-                view.circlePogressBar.visibility = View.GONE
-            }
-        })
+        override fun onLoadFailed(e: Exception?, errorDrawable: Drawable?) {
+            super.onLoadFailed(e, errorDrawable)
+            view.circlePogressBar.visibility = View.GONE
+        }
+    })
 }
 
 @BindingAdapter("gifInfo", "ratioWidth", requireAll = true)
@@ -97,4 +100,19 @@ fun setScrollEndListener(recyclerView: RecyclerView, action: () -> Unit) {
             }
         }
     })
+}
+
+@BindingAdapter("arrayAdapter")
+fun setArrayAdapter(textView: AutoCompleteTextView, array: List<String>) {
+    textView.setAdapter(
+        ArrayAdapter<String>(textView.context,
+            R.layout.simple_list_item_1, array)
+    )
+}
+
+@BindingAdapter("onItemClick")
+fun setOnItemClick(textView: AutoCompleteTextView,action: ()->Unit){
+    textView.setOnItemClickListener { parent, view, position, id ->
+        action()
+    }
 }

@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 
 class RotateTransition(context: Context, attributeSet: AttributeSet) : Transition(context, attributeSet) {
-    private val animationDuration = 380L
     private var layout: FrameLayout? = null
 
     override fun captureStartValues(transitionValues: TransitionValues?) {
@@ -18,9 +17,7 @@ class RotateTransition(context: Context, attributeSet: AttributeSet) : Transitio
             layout = transitionValues.view as FrameLayout
     }
 
-    override fun captureEndValues(transitionValues: TransitionValues?) {
-
-    }
+    override fun captureEndValues(transitionValues: TransitionValues?) {}
 
     override fun createAnimator(
         sceneRoot: ViewGroup?,

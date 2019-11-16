@@ -24,7 +24,7 @@
         android:focusable="true"
         android:focusableInTouchMode="true">
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/searchField"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -35,10 +35,12 @@
             android:imeOptions="actionSearch"
             android:inputType="textPersonName"
             android:text="@={mainViewModel.searchText}"
+            app:arrayAdapter="@{mainViewModel.previousTerms}"
             app:layout_constraintEnd_toStartOf="@+id/imageView"
             app:layout_constraintStart_toEndOf="@+id/trendingImage"
             app:layout_constraintTop_toTopOf="parent"
-            app:searchListener="@{mainViewModel::search}" />
+            app:searchListener="@{mainViewModel::search}"
+            app:onItemClick="@{mainViewModel::search}"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
@@ -110,7 +112,10 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone">
+
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
