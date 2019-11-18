@@ -10,6 +10,7 @@ import android.widget.EditText
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
@@ -105,14 +106,29 @@ fun setScrollEndListener(recyclerView: RecyclerView, action: () -> Unit) {
 @BindingAdapter("arrayAdapter")
 fun setArrayAdapter(textView: AutoCompleteTextView, array: List<String>) {
     textView.setAdapter(
-        ArrayAdapter<String>(textView.context,
-            R.layout.simple_list_item_1, array)
+        ArrayAdapter<String>(
+            textView.context,
+            R.layout.simple_list_item_1, array
+        ).apply {
+        }
     )
 }
 
 @BindingAdapter("onItemClick")
-fun setOnItemClick(textView: AutoCompleteTextView,action: ()->Unit){
+fun setOnItemClick(textView: AutoCompleteTextView, action: () -> Unit) {
     textView.setOnItemClickListener { parent, view, position, id ->
         action()
     }
+}
+
+@BindingAdapter("onRefresh")
+fun setOnRefresh(view: SwipeRefreshLayout, action: () -> Unit) {
+    view.setOnRefreshListener {
+        action()
+    }
+}
+
+@BindingAdapter("refreshing")
+fun setRefreshing(view: SwipeRefreshLayout, refreshing: Boolean) {
+    view.isRefreshing = refreshing
 }

@@ -33,16 +33,16 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <include
-                android:id="@+id/gifImageViewInclude"
-                layout="@layout/gif_image_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="@{clickListener}"
-                app:customUrl="@{gifModel.preview.url}"
-                app:placeHolder="@{null}"
-                app:gifInfo="@{gifModel.preview}"
-                app:ratioWidth="@{ratioWidth}" />
+                <include
+                    android:id="@+id/gifImageViewInclude"
+                    layout="@layout/gif_image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:onClick="@{clickListener}"
+                    app:customUrl="@{gifModel.preview.url}"
+                    app:gifInfo="@{gifModel.preview}"
+                    app:placeHolder="@{null}"
+                    app:ratioWidth="@{ratioWidth}" />
 
             <LinearLayout
                 android:layout_width="match_parent"

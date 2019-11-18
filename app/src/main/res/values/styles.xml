@@ -17,9 +17,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowSharedElementEnterTransition">
             @transition/image_shared_element_transition</item>
+        <item name="android:windowSharedElementExitTransition">
+            @transition/revers_image_shared_element_transition</item>
     </style>
 
 </resources>

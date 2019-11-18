@@ -4,8 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.Bundle
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,12 +24,21 @@ import io.demo.fedchenko.giphyclient.databinding.ActivityMainBinding
 import io.demo.fedchenko.giphyclient.receiver.NetworkStateBroadcastReceiver
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.gif_image_view.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
 class MainActivity : AppCompatActivity() {
 
-    private val mainViewModel: MainViewModel by viewModel()
+    private val mainViewModel: MainViewModel by viewModel {
+        parametersOf(
+            getSharedPreferences(
+                getString(io.demo.fedchenko.giphyclient.R.string.app_name),
+                Context.MODE_PRIVATE
+            )
+        )
+    }
     private lateinit var adapter: GifListAdapter
     private lateinit var layoutManager: StaggeredGridLayoutManager
 
@@ -82,14 +96,28 @@ class MainActivity : AppCompatActivity() {
 
         adapter = GifListAdapter(spanCount)
         adapter.setOnItemClickListener { view, model ->
-            if (!view.isLaidOut)
-                return@setOnItemClickListener
+            val bitmap =
+                if (view.isLaidOut && view.circlePogressBar.visibility == View.GONE) view.drawToBitmap() else {
+                    val bitmap = Bitmap.createBitmap(
+                        model.preview.width,
+                        model.preview.height,
+                        Bitmap.Config.ARGB_8888
+                    )
+                    val canvas = Canvas(bitmap)
+                    val paint = Paint()
+                    paint.color = Color.GRAY
+                    canvas.drawRect(
+                        0f, 0f,
+                        model.preview.width.toFloat(), model.preview.height.toFloat(), paint
+                    )
+                    bitmap
+                }
+
             val activityOptionsCompat =
                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                     this@MainActivity, view, "gifImageView"
                 )
 
-            val bitmap = view.drawToBitmap()
 
             binding.isActivityActive = false
             unregisterReceiver(receiver)
@@ -113,7 +141,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == GifViewActivity.REQUEST_CODE) {
             binding.isActivityActive = true
-            registerReceiver(receiver,intentFilter)
+            registerReceiver(receiver, intentFilter)
         }
     }
 
