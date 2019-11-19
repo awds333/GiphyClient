@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.drawToBitmap
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
@@ -43,6 +44,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var layoutManager: StaggeredGridLayoutManager
 
     private lateinit var binding: ActivityMainBinding
+
+    private var lastEmpty = false
 
     private val noConnectionDialog = NoConnectionDialog().apply {
         isCancelable = false
@@ -136,6 +139,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         registerReceiver(receiver, intentFilter)
+
+        mainViewModel.observeGifModels(this,
+            Observer { t ->
+                if (t?.isEmpty() != false) {
+                    lastEmpty = true
+                } else {
+                    if (lastEmpty) {
+                        recycler.post {
+                            recycler.scrollToPosition(0)
+                            recycler.scrollBy(0, Int.MIN_VALUE)
+                        }
+                        lastEmpty = false
+                    }
+                }
+            })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

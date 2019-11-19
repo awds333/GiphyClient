@@ -19,7 +19,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowSharedElementEnterTransition">
             @transition/image_shared_element_transition</item>
-        <item name="android:windowSharedElementExitTransition">
+        <item name="android:windowSharedElementReturnTransition">
             @transition/revers_image_shared_element_transition</item>
     </style>
 
