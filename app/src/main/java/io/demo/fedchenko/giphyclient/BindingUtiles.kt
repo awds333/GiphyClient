@@ -114,8 +114,7 @@ fun setArrayAdapter(textView: AutoCompleteTextView, array: List<String>) {
         ArrayAdapter<String>(
             textView.context,
             R.layout.simple_list_item_1, array
-        ).apply {
-        }
+        )
     )
 }
 

@@ -61,9 +61,7 @@ class MainViewModel(
         isScrollEndLiveData.value = true
     }
 
-    override fun onScrollHalf() {
-        getMoreGifs()
-    }
+    override fun onScrollHalf() = getMoreGifs()
 
     fun search() {
         val trimTerm = searchText.value?.trim() ?: return
@@ -109,7 +107,7 @@ class MainViewModel(
         getMoreGifs()
     }
 
-    fun getMoreGifs() {
+    private fun getMoreGifs() {
         if (isLoadingLiveData.value != true && isLoadingMoreLiveData.value != true) {
             if (gifModelsLiveData.value.isNullOrEmpty())
                 isLoadingLiveData.value = true
