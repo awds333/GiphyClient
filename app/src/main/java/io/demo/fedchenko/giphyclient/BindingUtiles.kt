@@ -17,6 +17,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget
 import io.demo.fedchenko.giphyclient.model.GifProperties
+import io.demo.fedchenko.giphyclient.viewmodel.ScrollListener
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 
 @BindingAdapter("customUrl", "placeHolder")
@@ -31,7 +32,7 @@ fun loadGif(view: View, url: String?, placeholder: Drawable? = null) {
     view.circlePogressBar.visibility = View.VISIBLE
     val request = Glide.with(view.context)
         .load(url)
-        .error(android.R.drawable.ic_delete)
+        .error(R.drawable.ic_delete)
         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
 
     placeholder?.also { request.placeholder(it) }
@@ -85,17 +86,21 @@ fun setSearchListener(view: EditText, action: () -> Unit) {
 }
 
 @BindingAdapter("onScrollEndListener")
-fun setScrollEndListener(recyclerView: RecyclerView, action: () -> Unit) {
+fun setScrollEndListener(recyclerView: RecyclerView, listener: ScrollListener) {
     recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
-            (recyclerView.layoutManager as StaggeredGridLayoutManager).also {
-                val count = it.itemCount - 1
-                val lastVisible = it.findLastVisibleItemPositions(IntArray(it.spanCount))
+            (recyclerView.layoutManager as StaggeredGridLayoutManager).also { layoutManager ->
+                val count = layoutManager.itemCount - 1
+                val lastVisible =
+                    layoutManager.findLastVisibleItemPositions(IntArray(layoutManager.spanCount))
                 lastVisible.forEach {
-                    if (it == count) {
-                        action()
-                        return@forEach
+                    if (it > count / 2) {
+                        listener.onScrollHalf()
+                        if (it == count) {
+                            listener.onScrollEnd()
+                            return@forEach
+                        }
                     }
                 }
             }

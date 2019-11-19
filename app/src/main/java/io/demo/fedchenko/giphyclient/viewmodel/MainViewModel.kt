@@ -8,11 +8,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
+interface ScrollListener {
+    fun onScrollEnd()
+    fun onScrollHalf()
+}
+//BindingAdapter не хочет работать получая на вход два ()->Unit по двум разеным пораметрам.
+//Потому, сделал интерфейс.
+
 class MainViewModel(
     private var gifProvider: GifProvider,
     private val termsRepo: SharedPreferencesTermsRepo
 ) :
-    ViewModel() {
+    ViewModel(), ScrollListener {
 
     private val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val isLoading: LiveData<Boolean> = isLoadingLiveData
@@ -23,6 +30,8 @@ class MainViewModel(
     val isCloseButtonVisible: LiveData<Boolean> = isCloseButtonVisibleLiveData
     private val previousTermsLiveData: MutableLiveData<List<String>> = MutableLiveData()
     val previousTerms: LiveData<List<String>> = previousTermsLiveData
+    private val isScrollEndLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val isScrollEnd: LiveData<Boolean> = isScrollEndLiveData
 
     private var exceptionListener: (() -> Unit)? = null
     private var keyboardListener: (() -> Unit)? = null
@@ -46,6 +55,14 @@ class MainViewModel(
         }
         previousTermsLiveData.value = termsRepo.getTerms()
         subscribeToLoader()
+    }
+
+    override fun onScrollEnd() {
+        isScrollEndLiveData.value = true
+    }
+
+    override fun onScrollHalf() {
+        getMoreGifs()
     }
 
     fun search() {
@@ -103,6 +120,7 @@ class MainViewModel(
                 gifModelsLiveData.value = gifs
                 isLoadingLiveData.value = false
                 isLoadingMoreLiveData.value = false
+                isScrollEndLiveData.value = false
             }
         }
     }

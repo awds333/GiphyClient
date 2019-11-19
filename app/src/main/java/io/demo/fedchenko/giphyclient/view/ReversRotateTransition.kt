@@ -9,11 +9,12 @@ import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.FrameLayout
 
-class ReversRotateTransition(context: Context, attributeSet: AttributeSet) : Transition(context, attributeSet) {
+class ReversRotateTransition(context: Context, attributeSet: AttributeSet) :
+    Transition(context, attributeSet) {
     private var layout: FrameLayout? = null
 
     override fun captureStartValues(transitionValues: TransitionValues?) {
-        if(transitionValues?.view is FrameLayout)
+        if (transitionValues?.view is FrameLayout)
             layout = transitionValues.view as FrameLayout
     }
 
@@ -24,7 +25,7 @@ class ReversRotateTransition(context: Context, attributeSet: AttributeSet) : Tra
         startValues: TransitionValues?,
         endValues: TransitionValues?
     ): Animator {
-        return ValueAnimator.ofFloat(360f,0f).apply {
+        return ValueAnimator.ofFloat(360f, 0f).apply {
             addUpdateListener {
                 layout?.rotation = it.animatedValue as Float
             }

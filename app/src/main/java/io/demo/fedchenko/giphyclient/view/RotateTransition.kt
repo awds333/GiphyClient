@@ -9,11 +9,12 @@ import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.FrameLayout
 
-class RotateTransition(context: Context, attributeSet: AttributeSet) : Transition(context, attributeSet) {
+class RotateTransition(context: Context, attributeSet: AttributeSet) :
+    Transition(context, attributeSet) {
     private var layout: FrameLayout? = null
 
     override fun captureStartValues(transitionValues: TransitionValues?) {
-        if(transitionValues?.view is FrameLayout)
+        if (transitionValues?.view is FrameLayout)
             layout = transitionValues.view as FrameLayout
     }
 
@@ -24,7 +25,7 @@ class RotateTransition(context: Context, attributeSet: AttributeSet) : Transitio
         startValues: TransitionValues?,
         endValues: TransitionValues?
     ): Animator {
-        return ValueAnimator.ofFloat(0f,360f).apply {
+        return ValueAnimator.ofFloat(0f, 360f).apply {
             addUpdateListener {
                 layout?.rotation = it.animatedValue as Float
             }
