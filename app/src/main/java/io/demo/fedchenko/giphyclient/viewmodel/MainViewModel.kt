@@ -116,8 +116,11 @@ class MainViewModel(
             else
                 isLoadingMoreLiveData.value = true
             job = scope.launch {
-                val gifs = gifLoader.loadMoreGifs()
-                gifModelsLiveData.value = gifs
+                try {
+                    gifModelsLiveData.value = gifLoader.loadMoreGifs()
+                } catch (e: Throwable) {
+                    exceptionListener?.invoke()
+                }
                 isLoadingLiveData.value = false
                 isLoadingMoreLiveData.value = false
                 isScrollEndLiveData.value = false
