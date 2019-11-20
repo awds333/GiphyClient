@@ -24,14 +24,14 @@ class MainViewModel(
     private val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val isLoading: LiveData<Boolean> = isLoadingLiveData
     private val isLoadingMoreLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    val isLoadingMore: LiveData<Boolean> = isLoadingMoreLiveData
     private val gifModelsLiveData: MutableLiveData<List<GifModel>> = MutableLiveData()
     private val isCloseButtonVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val isCloseButtonVisible: LiveData<Boolean> = isCloseButtonVisibleLiveData
     private val previousTermsLiveData: MutableLiveData<List<String>> = MutableLiveData()
     val previousTerms: LiveData<List<String>> = previousTermsLiveData
     private val isScrollEndLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    val isScrollEnd: LiveData<Boolean> = isScrollEndLiveData
+    private val isLoadingCardVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val isLoadingCardVisible: LiveData<Boolean> = isLoadingCardVisibleLiveData
 
     private var exceptionListener: (() -> Unit)? = null
     private var keyboardListener: (() -> Unit)? = null
@@ -59,6 +59,7 @@ class MainViewModel(
 
     override fun onScrollEnd() {
         isScrollEndLiveData.value = true
+        isLoadingCardVisibleLiveData.value = isLoadingMoreLiveData.value
     }
 
     override fun onScrollHalf() = getMoreGifs()
@@ -102,6 +103,7 @@ class MainViewModel(
     private fun subscribeToLoader() {
         isLoadingLiveData.value = false
         isLoadingMoreLiveData.value = false
+        isLoadingCardVisibleLiveData.value = false
         job?.cancel()
         gifModelsLiveData.value = emptyList()
         getMoreGifs()
@@ -119,6 +121,7 @@ class MainViewModel(
                 isLoadingLiveData.value = false
                 isLoadingMoreLiveData.value = false
                 isScrollEndLiveData.value = false
+                isLoadingCardVisibleLiveData.value = false
             }
         }
     }

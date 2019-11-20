@@ -13,19 +13,35 @@ class RotateTransition(context: Context, attributeSet: AttributeSet) :
     Transition(context, attributeSet) {
     private var layout: FrameLayout? = null
 
+    private var startPosition: Int = 0
+    private var endPosition: Int = 0
+
     override fun captureStartValues(transitionValues: TransitionValues?) {
-        if (transitionValues?.view is FrameLayout)
+        val view = transitionValues?.view
+        if (view is FrameLayout) {
             layout = transitionValues.view as FrameLayout
+            val position = IntArray(2)
+            view.getLocationOnScreen(position)
+            startPosition = position[0] + (view.width / 2)
+        }
     }
 
-    override fun captureEndValues(transitionValues: TransitionValues?) {}
+    override fun captureEndValues(transitionValues: TransitionValues?) {
+        val view = transitionValues?.view
+        if (view is FrameLayout) {
+            val position = IntArray(2)
+            view.getLocationOnScreen(position)
+            endPosition = position[0] + (view.width / 2)
+        }
+    }
 
     override fun createAnimator(
         sceneRoot: ViewGroup?,
         startValues: TransitionValues?,
         endValues: TransitionValues?
     ): Animator {
-        return ValueAnimator.ofFloat(0f, 360f).apply {
+        return (if (startPosition < endPosition) ValueAnimator.ofFloat(0f, 360f)
+        else ValueAnimator.ofFloat(360f, 0f)).apply {
             addUpdateListener {
                 layout?.rotation = it.animatedValue as Float
             }

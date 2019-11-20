@@ -14,7 +14,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val viewModelModule: Module = module {
-    viewModel { (preferences: SharedPreferences) -> MainViewModel(get<GifRepository>(), get<SharedPreferencesTermsRepo>(){ parametersOf(preferences)}) }
+    viewModel { (preferences: SharedPreferences) -> MainViewModel(get<GifRepository>(), get{ parametersOf(preferences)}) }
 }
 
 val repositoryModule: Module = module {

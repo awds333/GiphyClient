@@ -123,7 +123,6 @@ class MainActivity : AppCompatActivity() {
 
 
             binding.isActivityActive = false
-            unregisterReceiver(receiver)
             GifViewActivity.start(
                 model,
                 bitmap,
@@ -159,7 +158,6 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == GifViewActivity.REQUEST_CODE) {
             binding.isActivityActive = true
-            registerReceiver(receiver, intentFilter)
         }
     }
 

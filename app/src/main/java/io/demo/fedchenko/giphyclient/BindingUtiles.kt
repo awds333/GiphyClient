@@ -120,7 +120,7 @@ fun setArrayAdapter(textView: AutoCompleteTextView, array: List<String>) {
 
 @BindingAdapter("onItemClick")
 fun setOnItemClick(textView: AutoCompleteTextView, action: () -> Unit) {
-    textView.setOnItemClickListener { parent, view, position, id ->
+    textView.setOnItemClickListener { _, _, _, _ ->
         action()
     }
 }
