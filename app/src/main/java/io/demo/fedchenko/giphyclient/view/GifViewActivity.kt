@@ -71,7 +71,7 @@ class GifViewActivity : AppCompatActivity() {
         )
 
         binding.apply {
-            distributor = View.OnClickListener {
+            onShareClick = View.OnClickListener {
                 ShareCompat.IntentBuilder.from(this@GifViewActivity)
                     .setType("text/plain")
                     .setChooserTitle("Share Gif")
@@ -85,12 +85,12 @@ class GifViewActivity : AppCompatActivity() {
 
             areButtonsVisible = false
 
-            infoViewer = View.OnClickListener {
+            onInfoClick = View.OnClickListener {
                 val infoDialog: GifInfoDialogFragment = GifInfoDialogFragment.create(model)
                 infoDialog.show(supportFragmentManager, "info_dialog")
             }
 
-            canceler = View.OnClickListener {
+            onBackgroundClick = View.OnClickListener {
                 onBackPressed()
             }
         }

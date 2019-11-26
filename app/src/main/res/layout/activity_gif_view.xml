@@ -11,15 +11,15 @@
             type="io.demo.fedchenko.giphyclient.model.GifModel" />
 
         <variable
-            name="infoViewer"
+            name="onInfoClick"
             type="android.view.View.OnClickListener" />
 
         <variable
-            name="distributor"
+            name="onShareClick"
             type="android.view.View.OnClickListener" />
 
         <variable
-            name="canceler"
+            name="onBackgroundClick"
             type="android.view.View.OnClickListener" />
 
         <variable
@@ -42,7 +42,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:clickable="true"
-        android:onClick="@{canceler}">
+        android:onClick="@{onBackgroundClick}">
 
 
         <include
@@ -82,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:onClick="@{infoViewer}"
+            android:onClick="@{onInfoClick}"
             android:visibility="@{areButtonsVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="@+id/gifImageViewInclude"
             app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude"
@@ -93,7 +93,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:onClick="@{distributor}"
+            android:onClick="@{onShareClick}"
             android:visibility="@{areButtonsVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="@+id/gifImageViewInclude"
             app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude"

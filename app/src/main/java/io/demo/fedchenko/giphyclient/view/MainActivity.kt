@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
             )
         binding.lifecycleOwner = this
         binding.mainViewModel = mainViewModel
-        binding.isActivityActive = true
+        binding.isWindowBlocked = true
 
         val spanCount =
             if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 3
@@ -100,7 +100,9 @@ class MainActivity : AppCompatActivity() {
         adapter = GifListAdapter(spanCount)
         adapter.setOnItemClickListener { view, model ->
             val bitmap =
-                if (view.isLaidOut && view.circlePogressBar.visibility == View.GONE) view.drawToBitmap() else {
+                if (view.isLaidOut && view.circlePogressBar.visibility == View.GONE)
+                    view.drawToBitmap()
+                else {
                     val bitmap = Bitmap.createBitmap(
                         model.preview.width,
                         model.preview.height,
@@ -122,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                 )
 
 
-            binding.isActivityActive = false
+            binding.isWindowBlocked = false
             GifViewActivity.start(
                 model,
                 bitmap,
@@ -141,9 +143,9 @@ class MainActivity : AppCompatActivity() {
 
         mainViewModel.observeGifModels(this,
             Observer { t ->
-                if (t?.isEmpty() != false) {
+                if (t.isNullOrEmpty())
                     lastEmpty = true
-                } else {
+                else {
                     if (lastEmpty) {
                         recycler.post {
                             recycler.scrollToPosition(0)
@@ -156,15 +158,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == GifViewActivity.REQUEST_CODE) {
-            binding.isActivityActive = true
-        }
+        binding.isWindowBlocked = true
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
         savedInstanceState?.also {
-            binding.isActivityActive = it.getBoolean("isActivityActive", true)
+            binding.isWindowBlocked = it.getBoolean("isActivityClickable", true)
             scrollPosition = it.getInt("first_visible", 0)
         }
     }
@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
             val firstVisible = layoutManager.findFirstVisibleItemPositions(IntArray(3))
             if (firstVisible.isNotEmpty())
                 this.putInt("first_visible", firstVisible[0])
-            this.putBoolean("isActivityActive", binding.isActivityActive ?: true)
+            this.putBoolean("isActivityClickable", binding.isWindowBlocked ?: true)
         }
         super.onSaveInstanceState(outState)
     }

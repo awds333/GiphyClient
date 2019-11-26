@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import com.google.gson.Gson
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.databinding.FragmentDialogGifInfoBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
@@ -19,7 +18,7 @@ class GifInfoDialogFragment : DialogFragment() {
             val gifInfoDialog = GifInfoDialogFragment()
             val args = Bundle()
 
-            args.putString(MODEL, Gson().toJson(model).toString())
+            args.putParcelable(MODEL, model)
 
             gifInfoDialog.arguments = args
             return gifInfoDialog
@@ -32,8 +31,8 @@ class GifInfoDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.getString(MODEL)?.also {
-            model = Gson().fromJson(it, GifModel::class.java)
+        arguments?.getParcelable<GifModel>(MODEL)?.also {
+            model = it
         } ?: return run {
             dismiss()
         }
