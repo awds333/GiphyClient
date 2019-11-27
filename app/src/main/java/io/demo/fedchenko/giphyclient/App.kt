@@ -2,6 +2,7 @@ package io.demo.fedchenko.giphyclient
 
 import android.app.Application
 import io.demo.fedchenko.giphyclient.di.repositoryModule
+import io.demo.fedchenko.giphyclient.di.utilesModel
 import io.demo.fedchenko.giphyclient.di.viewModelModule
 import org.koin.core.context.startKoin
 
@@ -9,7 +10,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {
-            modules(listOf(viewModelModule, repositoryModule))
+            modules(listOf(viewModelModule, repositoryModule, utilesModel))
             properties(
                 mapOf(
                     Pair("qiphy_key", "g0huuU56R74KkSQCYLdzfqCDyr4JmssE"),

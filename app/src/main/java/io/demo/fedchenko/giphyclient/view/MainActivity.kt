@@ -2,13 +2,11 @@ package io.demo.fedchenko.giphyclient.view
 
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -17,15 +15,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.drawToBitmap
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import io.demo.fedchenko.giphyclient.ConnectivityLiveData
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.databinding.ActivityMainBinding
-import io.demo.fedchenko.giphyclient.receiver.NetworkStateBroadcastReceiver
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.gif_image_view.view.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -51,14 +51,11 @@ class MainActivity : AppCompatActivity() {
         isCancelable = false
     }
 
-    private var intentFilter = IntentFilter(CONNECTIVITY_ACTION)
-    private val receiver = NetworkStateBroadcastReceiver(onConnected = {
-        if (noConnectionDialog.isResumed)
-            noConnectionDialog.dismiss()
-    }, onDisconnected = {
-        if (!noConnectionDialog.isResumed)
-            noConnectionDialog.show(supportFragmentManager, "")
-    })
+    private val connectivityLiveData: LiveData<Boolean> by inject<ConnectivityLiveData> {
+        parametersOf(
+            application
+        )
+    }
 
     private val exceptionListener = {
         Toast.makeText(
@@ -139,7 +136,15 @@ class MainActivity : AppCompatActivity() {
             recycler.scrollToPosition(scrollPosition)
         }
 
-        registerReceiver(receiver, intentFilter)
+        connectivityLiveData.observe(this, Observer {
+            if (it) {
+                if (noConnectionDialog.isResumed)
+                    noConnectionDialog.dismiss()
+            } else {
+                if (!noConnectionDialog.isResumed)
+                    noConnectionDialog.show(supportFragmentManager, "")
+            }
+        })
 
         mainViewModel.observeGifModels(this,
             Observer { t ->
@@ -193,6 +198,5 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(receiver)
     }
 }

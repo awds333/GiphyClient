@@ -1,7 +1,9 @@
 package io.demo.fedchenko.giphyclient.di
 
+import android.app.Application
 import android.content.SharedPreferences
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import io.demo.fedchenko.giphyclient.ConnectivityLiveData
 import io.demo.fedchenko.giphyclient.repository.GifRepository
 import io.demo.fedchenko.giphyclient.repository.SharedPreferencesTermsRepo
 import io.demo.fedchenko.giphyclient.retrofit.GiphyAPI
@@ -35,4 +37,8 @@ val repositoryModule: Module = module {
     single { (preferences: SharedPreferences) ->
         SharedPreferencesTermsRepo(preferences)
     }
+}
+
+val utilesModel: Module = module {
+    single { (app: Application) -> ConnectivityLiveData(app) }
 }
