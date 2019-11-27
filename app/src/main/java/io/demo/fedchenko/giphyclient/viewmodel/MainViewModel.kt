@@ -3,6 +3,9 @@ package io.demo.fedchenko.giphyclient.viewmodel
 import androidx.lifecycle.*
 import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.repository.*
+import io.demo.fedchenko.giphyclient.repository.loader.GifLoader
+import io.demo.fedchenko.giphyclient.repository.loader.SearchGifLoader
+import io.demo.fedchenko.giphyclient.repository.loader.TrendingGifLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -38,7 +41,10 @@ class MainViewModel(
 
     private var lastTerm = ""
 
-    private var gifLoader: GifLoader = TrendingGifLoader(gifProvider)
+    private var gifLoader: GifLoader =
+        TrendingGifLoader(
+            gifProvider
+        )
 
     val searchText: MutableLiveData<String> = MutableLiveData()
 
@@ -70,7 +76,11 @@ class MainViewModel(
             return
         lastTerm = trimTerm
         keyboardListener?.invoke()
-        gifLoader = SearchGifLoader(gifProvider, trimTerm)
+        gifLoader =
+            SearchGifLoader(
+                gifProvider,
+                trimTerm
+            )
         if (previousTermsLiveData.value?.contains(trimTerm) != true) {
             previousTermsLiveData.value = (previousTermsLiveData.value ?: emptyList()) + trimTerm
             termsRepo.saveTerms(previousTermsLiveData.value ?: emptyList())
@@ -85,8 +95,13 @@ class MainViewModel(
     }
 
     fun refresh() {
-        gifLoader = if (lastTerm.isEmpty()) TrendingGifLoader(gifProvider)
-        else SearchGifLoader(gifProvider, lastTerm)
+        gifLoader = if (lastTerm.isEmpty()) TrendingGifLoader(
+            gifProvider
+        )
+        else SearchGifLoader(
+            gifProvider,
+            lastTerm
+        )
         subscribeToLoader()
     }
 
@@ -95,7 +110,10 @@ class MainViewModel(
             searchText.value = ""
         lastTerm = ""
         keyboardListener?.invoke()
-        gifLoader = TrendingGifLoader(gifProvider)
+        gifLoader =
+            TrendingGifLoader(
+                gifProvider
+            )
         subscribeToLoader()
     }
 

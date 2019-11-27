@@ -1,4 +1,4 @@
-package io.demo.fedchenko.giphyclient.repository
+package io.demo.fedchenko.giphyclient.repository.loader
 
 import io.demo.fedchenko.giphyclient.model.GifModel
 

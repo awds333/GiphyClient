@@ -5,8 +5,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkInfo
-import android.net.NetworkRequest
-import android.os.Build
 import androidx.lifecycle.LiveData
 
 class ConnectivityLiveData(private val connectivityManager: ConnectivityManager) :
@@ -33,12 +31,7 @@ class ConnectivityLiveData(private val connectivityManager: ConnectivityManager)
         val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
         postValue(activeNetwork?.isConnected == true)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            connectivityManager.registerDefaultNetworkCallback(networkCallback)
-        } else {
-            val builder = NetworkRequest.Builder()
-            connectivityManager.registerNetworkCallback(builder.build(), networkCallback)
-        }
+        connectivityManager.registerDefaultNetworkCallback(networkCallback)
     }
 
     override fun onInactive() {
