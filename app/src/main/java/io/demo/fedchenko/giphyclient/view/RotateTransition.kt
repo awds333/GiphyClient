@@ -6,12 +6,13 @@ import android.content.Context
 import android.transition.Transition
 import android.transition.TransitionValues
 import android.util.AttributeSet
+import android.view.View
 import android.view.ViewGroup
 
 class RotateTransition(context: Context, attributeSet: AttributeSet) :
     Transition(context, attributeSet) {
 
-    private var viewSelected = false
+    private val views = mutableListOf<View>()
 
     override fun captureStartValues(transitionValues: TransitionValues?) {
         val view = transitionValues?.view ?: return
@@ -32,9 +33,12 @@ class RotateTransition(context: Context, attributeSet: AttributeSet) :
         startValues: TransitionValues?,
         endValues: TransitionValues?
     ): Animator {
-        if (viewSelected || startValues == null)
+        startValues?.view?.also {
+            views.add(startValues.view)
+        }
+        val parentView = startValues?.view?.parent as View
+        if (views.contains(parentView) || startValues == null)
             return ValueAnimator.ofFloat(0f, 1f)
-        viewSelected = true
         val animator =
             if ((startValues.values?.get("startPosition") as Int) < (endValues?.values?.get("endPosition") as Int))
                 ValueAnimator.ofFloat(0f, 360f)
