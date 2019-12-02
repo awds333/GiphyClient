@@ -54,14 +54,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchField"
             app:onRefresh="@{mainViewModel::refresh}"
-            app:refreshing="@{mainViewModel.isLoading()}">
+            app:refreshing="@{mainViewModel.isLoading() &amp; mainViewModel.gifModelsCount == 0}">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:overScrollMode="never"
-                app:onScrollEndListener="@{mainViewModel}"
+                app:onScrollListener="@{mainViewModel}"
                 app:reverseLayout="true" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -108,7 +108,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:visibility='@{mainViewModel.isLoadingCardVisible() ? View.VISIBLE : View.GONE}'
+            android:visibility='@{mainViewModel.isLoading() &amp; mainViewModel.isScrollEnd() &amp; mainViewModel.gifModelsCount != 0 ? View.VISIBLE : View.GONE}'
             app:cardCornerRadius="4dp"
             app:cardElevation="2dp"
             app:layout_constraintBottom_toBottomOf="parent"

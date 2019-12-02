@@ -2,7 +2,8 @@ package io.demo.fedchenko.giphyclient.viewmodel
 
 import androidx.lifecycle.*
 import io.demo.fedchenko.giphyclient.model.GifModel
-import io.demo.fedchenko.giphyclient.repository.*
+import io.demo.fedchenko.giphyclient.repository.GifProvider
+import io.demo.fedchenko.giphyclient.repository.SharedPreferencesTermsRepo
 import io.demo.fedchenko.giphyclient.repository.loader.GifLoader
 import io.demo.fedchenko.giphyclient.repository.loader.SearchGifLoader
 import io.demo.fedchenko.giphyclient.repository.loader.TrendingGifLoader
@@ -11,30 +12,34 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-interface ScrollListener {
-    fun onScrollEnd()
-    fun onScrollHalf()
+interface OnScrollListener {
+    fun onScroll(position: Int)
 }
-//BindingAdapter не хочет работать получая на вход два ()->Unit по двум разеным пораметрам.
-//Потому, сделал интерфейс.
 
 class MainViewModel(
     private var gifProvider: GifProvider,
     private val termsRepo: SharedPreferencesTermsRepo
-) :
-    ViewModel(), ScrollListener {
+) : ViewModel(), OnScrollListener {
 
     private val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    val isLoading: LiveData<Boolean> = isLoadingLiveData
-    private val isLoadingMoreLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val isLoading: LiveData<Boolean>
+        get() = isLoadingLiveData
+
     private val gifModelsLiveData: MutableLiveData<List<GifModel>> = MutableLiveData()
+    val gifModelsCount: LiveData<Int>
+        get() = Transformations.map(gifModelsLiveData) { it.size }
+
     private val isCloseButtonVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    val isCloseButtonVisible: LiveData<Boolean> = isCloseButtonVisibleLiveData
+    val isCloseButtonVisible: LiveData<Boolean>
+        get() = isCloseButtonVisibleLiveData
+
     private val previousTermsLiveData: MutableLiveData<List<String>> = MutableLiveData()
-    val previousTerms: LiveData<List<String>> = previousTermsLiveData
+    val previousTerms: LiveData<List<String>>
+        get() = previousTermsLiveData
+
     private val isScrollEndLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    private val isLoadingCardVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    val isLoadingCardVisible: LiveData<Boolean> = isLoadingCardVisibleLiveData
+    val isScrollEnd: LiveData<Boolean>
+        get() = isScrollEndLiveData
 
     private var exceptionListener: (() -> Unit)? = null
     private var keyboardListener: (() -> Unit)? = null
@@ -52,10 +57,10 @@ class MainViewModel(
     private var job: Job? = null
 
     init {
-        isLoadingMoreLiveData.value = false
         isLoadingLiveData.value = false
         gifModelsLiveData.value = emptyList()
         isCloseButtonVisibleLiveData.value = false
+        isScrollEndLiveData.value = false
         searchText.observeForever {
             isCloseButtonVisibleLiveData.value = it.isNotEmpty()
         }
@@ -63,12 +68,13 @@ class MainViewModel(
         subscribeToLoader()
     }
 
-    override fun onScrollEnd() {
-        isScrollEndLiveData.value = true
-        isLoadingCardVisibleLiveData.value = isLoadingMoreLiveData.value
+    override fun onScroll(position: Int) {
+        if (position > (gifModelsLiveData.value?.size ?: Int.MAX_VALUE) - 20) {
+            getMoreGifs()
+            if (position == (gifModelsLiveData.value?.size ?: 0) - 1)
+                isScrollEndLiveData.value = true
+        }
     }
-
-    override fun onScrollHalf() = getMoreGifs()
 
     fun search() {
         val trimTerm = searchText.value?.trim() ?: return
@@ -90,8 +96,9 @@ class MainViewModel(
 
     fun clean() {
         searchText.value = ""
-        if (lastTerm.isNotEmpty())
+        if (lastTerm.isNotEmpty()) {
             getTrending()
+        }
     }
 
     fun refresh() {
@@ -120,19 +127,14 @@ class MainViewModel(
 
     private fun subscribeToLoader() {
         isLoadingLiveData.value = false
-        isLoadingMoreLiveData.value = false
-        isLoadingCardVisibleLiveData.value = false
         job?.cancel()
         gifModelsLiveData.value = emptyList()
         getMoreGifs()
     }
 
     private fun getMoreGifs() {
-        if (isLoadingLiveData.value != true && isLoadingMoreLiveData.value != true) {
-            if (gifModelsLiveData.value.isNullOrEmpty())
-                isLoadingLiveData.value = true
-            else
-                isLoadingMoreLiveData.value = true
+        if (isLoadingLiveData.value != true) {
+            isLoadingLiveData.value = true
             job = scope.launch {
                 try {
                     gifModelsLiveData.value = gifLoader.loadMoreGifs()
@@ -140,9 +142,7 @@ class MainViewModel(
                     exceptionListener?.invoke()
                 }
                 isLoadingLiveData.value = false
-                isLoadingMoreLiveData.value = false
                 isScrollEndLiveData.value = false
-                isLoadingCardVisibleLiveData.value = false
             }
         }
     }

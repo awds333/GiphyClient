@@ -36,8 +36,8 @@ class RotateTransition(context: Context, attributeSet: AttributeSet) :
         startValues?.view?.also {
             views.add(startValues.view)
         }
-        val parentView = startValues?.view?.parent as View
-        if (views.contains(parentView) || startValues == null)
+        val parentView = startValues?.view?.parent as? View
+        if (startValues == null || views.contains(parentView))
             return ValueAnimator.ofFloat(0f, 1f)
         val animator =
             if ((startValues.values?.get("startPosition") as Int) < (endValues?.values?.get("endPosition") as Int))

@@ -17,7 +17,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget
 import io.demo.fedchenko.giphyclient.model.GifProperties
-import io.demo.fedchenko.giphyclient.viewmodel.ScrollListener
+import io.demo.fedchenko.giphyclient.viewmodel.OnScrollListener
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 
 @BindingAdapter("customUrl", "placeHolder")
@@ -85,24 +85,15 @@ fun setSearchListener(view: EditText, action: () -> Unit) {
     }
 }
 
-@BindingAdapter("onScrollEndListener")
-fun setScrollEndListener(recyclerView: RecyclerView, listener: ScrollListener) {
+@BindingAdapter("onScrollListener")
+fun setScrollListener(recyclerView: RecyclerView, listener: OnScrollListener) {
     recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
             (recyclerView.layoutManager as StaggeredGridLayoutManager).also { layoutManager ->
-                val count = layoutManager.itemCount - 1
                 val lastVisible =
-                    layoutManager.findLastVisibleItemPositions(IntArray(layoutManager.spanCount))
-                lastVisible.forEach {
-                    if (it > count / 2) {
-                        listener.onScrollHalf()
-                        if (it == count) {
-                            listener.onScrollEnd()
-                            return@forEach
-                        }
-                    }
-                }
+                    layoutManager.findLastVisibleItemPositions(null)
+                listener.onScroll(lastVisible.max() ?: 0)
             }
         }
     })
