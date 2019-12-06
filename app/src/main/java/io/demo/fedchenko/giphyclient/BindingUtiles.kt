@@ -8,9 +8,11 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
+import androidx.fragment.app.FragmentPagerAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
@@ -126,4 +128,9 @@ fun setOnRefresh(view: SwipeRefreshLayout, action: () -> Unit) {
 @BindingAdapter("refreshing")
 fun setRefreshing(view: SwipeRefreshLayout, refreshing: Boolean) {
     view.isRefreshing = refreshing
+}
+
+@BindingAdapter("fragmentAdapter")
+fun setFragmentAdapter(view: ViewPager, adapter: FragmentPagerAdapter){
+    view.adapter = adapter
 }

@@ -33,16 +33,31 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <include
-                android:id="@+id/gifImageViewInclude"
-                layout="@layout/gif_image_view"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="@{clickListener}"
-                app:customUrl="@{gifModel.preview.url}"
-                app:gifInfo="@{gifModel.preview}"
-                app:placeHolder="@{null}"
-                app:ratioWidth="@{ratioWidth}" />
+                android:layout_height="wrap_content">
+
+                <include
+                    android:id="@+id/gifImageViewInclude"
+                    layout="@layout/gif_image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{clickListener}"
+                    app:customUrl="@{gifModel.preview.url}"
+                    app:gifInfo="@{gifModel.preview}"
+                    app:placeHolder="@{null}"
+                    app:ratioWidth="@{ratioWidth}" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@android:drawable/btn_star_big_on"
+                    android:layout_gravity="top|right"
+                    android:layout_margin="8dp"
+                    android:visibility="@{gifModel.favorite ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible"/>
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

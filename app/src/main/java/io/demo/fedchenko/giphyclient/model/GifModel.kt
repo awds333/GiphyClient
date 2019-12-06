@@ -9,7 +9,8 @@ data class GifModel(
     val preview: GifProperties,
     val userName: String,
     val title: String,
-    val importDateTime: String
+    val importDateTime: String,
+    var favorite: Boolean = false
 ):Parcelable
 
 @Parcelize

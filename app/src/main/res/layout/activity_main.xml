@@ -14,10 +14,6 @@
         <variable
             name="mainViewModel"
             type="io.demo.fedchenko.giphyclient.viewmodel.MainViewModel" />
-
-        <variable
-            name="isWindowBlocked"
-            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,7 +29,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:ems="10"
-            android:hint="@string/search"
+            android:hint="@string/small_search"
             android:imeOptions="actionSearch"
             android:inputType="textPersonName"
             android:text="@={mainViewModel.searchText}"
@@ -122,20 +118,6 @@
                 android:layout_height="wrap_content"
                 android:indeterminate="true" />
         </androidx.cardview.widget.CardView>
-
-        <FrameLayout
-            android:id="@+id/windowBlocker"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="#00000000"
-            android:clickable="true"
-            android:visibility="@{isWindowBlocked ? View.GONE : View.VISIBLE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="gone">
-        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
