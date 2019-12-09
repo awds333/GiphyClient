@@ -2,17 +2,18 @@ package io.demo.fedchenko.giphyclient
 
 import android.R
 import android.graphics.drawable.Drawable
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
+import androidx.core.view.GestureDetectorCompat
 import androidx.databinding.BindingAdapter
-import androidx.fragment.app.FragmentPagerAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
@@ -130,7 +131,22 @@ fun setRefreshing(view: SwipeRefreshLayout, refreshing: Boolean) {
     view.isRefreshing = refreshing
 }
 
-@BindingAdapter("fragmentAdapter")
-fun setFragmentAdapter(view: ViewPager, adapter: FragmentPagerAdapter){
-    view.adapter = adapter
+@BindingAdapter("bind:onLongPress","bind:customOnClick", requireAll = false)
+fun setOnLongPress(view: View, onLongPress: View.OnClickListener? = null, onClick: View.OnClickListener? = null){
+    val gestureDetector = GestureDetectorCompat(view.context,object : GestureDetector.SimpleOnGestureListener(){
+        override fun onLongPress(e: MotionEvent?) {
+            onLongPress?.onClick(view)
+        }
+
+        override fun onSingleTapUp(e: MotionEvent?): Boolean {
+            onClick?.onClick(view)
+            return true
+        }
+
+
+    })
+    view.setOnTouchListener { _, event ->
+        gestureDetector.onTouchEvent(event)
+        return@setOnTouchListener true
+    }
 }

@@ -132,6 +132,9 @@ class SearchFragment : Fragment() {
                 activityOptionsCompat.toBundle()
             )
         }
+        adapter.setOnItemLongPressListener { view, gifModel ->
+
+        }
 
         recycler.adapter = adapter
         recycler.post {
