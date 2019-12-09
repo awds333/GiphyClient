@@ -16,10 +16,6 @@
             type="android.view.View.OnClickListener" />
 
         <variable
-            name="longPressListener"
-            type="android.view.View.OnClickListener" />
-
-        <variable
             name="ratioWidth"
             type="Integer" />
     </data>
@@ -46,10 +42,9 @@
                     layout="@layout/gif_image_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="@{clickListener}"
                     app:customUrl="@{gifModel.preview.url}"
                     app:gifInfo="@{gifModel.preview}"
-                    app:customOnClick="@{clickListener}"
-                    app:onLongPress="@{longPressListener}"
                     app:placeHolder="@{null}"
                     app:ratioWidth="@{ratioWidth}" />
 
@@ -58,10 +53,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|right"
-                    android:layout_margin="8dp"
-                    android:visibility="@{gifModel.favorite ? View.VISIBLE : View.GONE}"
-                    app:srcCompat="@android:drawable/btn_star_big_on"
-                    tools:visibility="visible" />
+                    android:padding="8dp"
+                    app:srcCompat="@android:drawable/btn_star_big_off" />
             </FrameLayout>
 
             <LinearLayout

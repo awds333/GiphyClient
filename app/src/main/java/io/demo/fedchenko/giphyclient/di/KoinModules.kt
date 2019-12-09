@@ -1,12 +1,15 @@
 package io.demo.fedchenko.giphyclient.di
 
 import android.app.Application
+import android.content.Context
 import android.content.SharedPreferences
+import androidx.room.Room
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import io.demo.fedchenko.giphyclient.ConnectivityLiveData
 import io.demo.fedchenko.giphyclient.repository.GifRepository
 import io.demo.fedchenko.giphyclient.repository.SharedPreferencesTermsRepo
 import io.demo.fedchenko.giphyclient.retrofit.GiphyAPI
+import io.demo.fedchenko.giphyclient.room.AppDataBase
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
@@ -16,7 +19,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val viewModelModule: Module = module {
-    viewModel { (preferences: SharedPreferences) -> MainViewModel(get<GifRepository>(), get{ parametersOf(preferences)}) }
+    viewModel { (preferences: SharedPreferences) ->
+        MainViewModel(
+            get<GifRepository>(),
+            get { parametersOf(preferences) })
+    }
 }
 
 val repositoryModule: Module = module {
@@ -36,6 +43,9 @@ val repositoryModule: Module = module {
     }
     single { (preferences: SharedPreferences) ->
         SharedPreferencesTermsRepo(preferences)
+    }
+    single { (context: Context) ->
+        Room.databaseBuilder(context, AppDataBase::class.java, "MAIN_DB").build()
     }
 }
 

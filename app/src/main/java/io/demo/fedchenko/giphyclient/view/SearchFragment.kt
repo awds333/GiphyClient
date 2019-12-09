@@ -23,10 +23,10 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.giphyclient.ConnectivityLiveData
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
-import io.demo.fedchenko.giphyclient.databinding.ActivityMainBinding
+import io.demo.fedchenko.giphyclient.databinding.SearchFragmentBinding
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.gif_image_view.view.*
+import kotlinx.android.synthetic.main.search_fragment.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -44,7 +44,7 @@ class SearchFragment : Fragment() {
     private lateinit var adapter: GifListAdapter
     private lateinit var layoutManager: StaggeredGridLayoutManager
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: SearchFragmentBinding
 
     private var lastEmpty = false
 
@@ -81,8 +81,7 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.activity_main, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.search_fragment, container, false)
         return binding.root
     }
 
@@ -131,9 +130,6 @@ class SearchFragment : Fragment() {
                 activity!!,
                 activityOptionsCompat.toBundle()
             )
-        }
-        adapter.setOnItemLongPressListener { view, gifModel ->
-
         }
 
         recycler.adapter = adapter

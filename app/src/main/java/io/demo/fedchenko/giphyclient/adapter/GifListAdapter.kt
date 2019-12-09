@@ -16,7 +16,6 @@ class GifListAdapter(private val span: Int) :
 
     private var gifModels: List<GifModel> = emptyList()
     private var gifOnItemClickListener: ((View, GifModel) -> Unit)? = null
-    private var gifOnItemLongPressListener: ((View, GifModel) -> Unit)? = null
 
     val gifModelsObserver = Observer<List<GifModel>> {
         val oldModels = gifModels
@@ -45,10 +44,6 @@ class GifListAdapter(private val span: Int) :
         gifOnItemClickListener = listener
     }
 
-    fun setOnItemLongPressListener(listener: (View, GifModel) -> Unit) {
-        gifOnItemLongPressListener = listener
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GifViewHolder {
         val binding: GifViewBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
@@ -69,9 +64,6 @@ class GifListAdapter(private val span: Int) :
         val model = gifModels[position]
         holder.binding.clickListener = View.OnClickListener {
             gifOnItemClickListener?.invoke(it, model)
-        }
-        holder.binding.longPressListener = View.OnClickListener {
-            gifOnItemLongPressListener?.invoke(it, model)
         }
         holder.binding.gifModel = model
         holder.binding.executePendingBindings()
