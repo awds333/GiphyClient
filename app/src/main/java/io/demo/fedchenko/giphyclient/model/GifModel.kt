@@ -5,12 +5,13 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class GifModel(
+    val id: String,
     val original: GifProperties,
     val preview: GifProperties,
     val userName: String,
     val title: String,
     val importDateTime: String,
-    var favorite: Boolean = false
+    var isFavorite: Boolean = false
 ):Parcelable
 
 @Parcelize

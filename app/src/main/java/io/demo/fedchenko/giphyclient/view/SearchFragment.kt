@@ -33,12 +33,13 @@ import org.koin.core.parameter.parametersOf
 
 class SearchFragment : Fragment() {
 
-    private val mainViewModel: MainViewModel by viewModel {
+    private val searchViewModel: MainViewModel by viewModel {
         parametersOf(
             activity!!.getSharedPreferences(
                 getString(R.string.app_name),
                 Context.MODE_PRIVATE
-            )
+            ),
+            context!!.applicationContext
         )
     }
     private lateinit var adapter: GifListAdapter
@@ -88,7 +89,7 @@ class SearchFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         binding.lifecycleOwner = this
-        binding.mainViewModel = mainViewModel
+        binding.searchViewModel = searchViewModel
 
         val spanCount =
             if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 3
@@ -131,10 +132,13 @@ class SearchFragment : Fragment() {
                 activityOptionsCompat.toBundle()
             )
         }
+        adapter.setOnItemFavoriteClickListener { _, gifModel ->
+            searchViewModel.changeFavorite(gifModel)
+        }
 
         recycler.adapter = adapter
         recycler.post {
-            mainViewModel.observeGifModels(this, adapter.gifModelsObserver)
+            searchViewModel.observeGifModels(this, adapter.gifModelsObserver)
             recycler.scrollToPosition(scrollPosition)
         }
 
@@ -148,7 +152,7 @@ class SearchFragment : Fragment() {
             }
         })
 
-        mainViewModel.observeGifModels(this,
+        searchViewModel.observeGifModels(this,
             Observer { t ->
                 if (t.isNullOrEmpty())
                     lastEmpty = true
@@ -181,13 +185,13 @@ class SearchFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        mainViewModel.registerExceptionsListener(exceptionListener)
-        mainViewModel.registerKeyboardListener(keyboardListener)
+        searchViewModel.registerExceptionsListener(exceptionListener)
+        searchViewModel.registerKeyboardListener(keyboardListener)
     }
 
     override fun onPause() {
         super.onPause()
-        mainViewModel.removeExceptionListener()
-        mainViewModel.removeKeyboardListener()
+        searchViewModel.removeExceptionListener()
+        searchViewModel.removeKeyboardListener()
     }
 }

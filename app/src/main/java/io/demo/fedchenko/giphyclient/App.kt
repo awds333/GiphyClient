@@ -14,7 +14,8 @@ class App : Application() {
             properties(
                 mapOf(
                     Pair("qiphy_key", "g0huuU56R74KkSQCYLdzfqCDyr4JmssE"),
-                    Pair("base_url", "https://api.giphy.com/v1/gifs/")
+                    Pair("base_url", "https://api.giphy.com/v1/gifs/"),
+                    Pair("db_name", "MAIN_DB")
                 )
             )
         }

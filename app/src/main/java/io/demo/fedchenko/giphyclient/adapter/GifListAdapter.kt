@@ -1,5 +1,6 @@
 package io.demo.fedchenko.giphyclient.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,13 +17,15 @@ class GifListAdapter(private val span: Int) :
 
     private var gifModels: List<GifModel> = emptyList()
     private var gifOnItemClickListener: ((View, GifModel) -> Unit)? = null
+    private var gifOnItemFavoriteClickListener: ((View, GifModel) -> Unit)? = null
 
     val gifModelsObserver = Observer<List<GifModel>> {
         val oldModels = gifModels
         gifModels = it
         val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return oldModels[oldItemPosition].original.url == gifModels[newItemPosition].original.url
+                return oldModels[oldItemPosition].id == gifModels[newItemPosition].id
+                        && oldModels[oldItemPosition].isFavorite == gifModels[newItemPosition].isFavorite
             }
 
             override fun getOldListSize(): Int {
@@ -35,6 +38,7 @@ class GifListAdapter(private val span: Int) :
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 return oldModels[oldItemPosition] == gifModels[newItemPosition]
+                        && oldModels[oldItemPosition].isFavorite == gifModels[newItemPosition].isFavorite
             }
         })
         diff.dispatchUpdatesTo(this)
@@ -42,6 +46,10 @@ class GifListAdapter(private val span: Int) :
 
     fun setOnItemClickListener(listener: (View, GifModel) -> Unit) {
         gifOnItemClickListener = listener
+    }
+
+    fun setOnItemFavoriteClickListener(listener: (View, GifModel) -> Unit) {
+        gifOnItemFavoriteClickListener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GifViewHolder {
@@ -65,7 +73,11 @@ class GifListAdapter(private val span: Int) :
         holder.binding.clickListener = View.OnClickListener {
             gifOnItemClickListener?.invoke(it, model)
         }
+        holder.binding.favoriteClickListener = View.OnClickListener {
+            gifOnItemFavoriteClickListener?.invoke(it, model)
+        }
         holder.binding.gifModel = model
         holder.binding.executePendingBindings()
+        Log.d("taggg", model.isFavorite.toString())
     }
 }

@@ -4,15 +4,16 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GifDao {
     @Query("SELECT * FROM dbgif")
-    fun getAll(): List<DbGif>
+    fun getAll(): Flow<List<DbGif>>
 
     @Insert
-    fun insertAll(vararg gifs: DbGif)
+    suspend fun insertAll(vararg gifs: DbGif)
 
     @Delete
-    fun delete(gif: DbGif)
+    suspend fun delete(gif: DbGif)
 }

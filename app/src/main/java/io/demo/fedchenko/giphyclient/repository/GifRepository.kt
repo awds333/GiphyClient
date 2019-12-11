@@ -17,6 +17,7 @@ class GifRepository(private val giphyKey: String, private val giphyAPI: GiphyAPI
         val name = notParsedModel.user?.name ?: ""
 
         return GifModel(
+            notParsedModel.id,
             original,
             preview,
             name,

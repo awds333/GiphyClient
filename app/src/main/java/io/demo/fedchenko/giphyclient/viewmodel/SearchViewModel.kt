@@ -2,23 +2,23 @@ package io.demo.fedchenko.giphyclient.viewmodel
 
 import androidx.lifecycle.*
 import io.demo.fedchenko.giphyclient.model.GifModel
+import io.demo.fedchenko.giphyclient.repository.GifManager
 import io.demo.fedchenko.giphyclient.repository.GifProvider
 import io.demo.fedchenko.giphyclient.repository.SharedPreferencesTermsRepo
 import io.demo.fedchenko.giphyclient.repository.loader.GifLoader
 import io.demo.fedchenko.giphyclient.repository.loader.SearchGifLoader
 import io.demo.fedchenko.giphyclient.repository.loader.TrendingGifLoader
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 
 interface OnScrollListener {
     fun onScroll(position: Int)
 }
 
 class MainViewModel(
-    private var gifProvider: GifProvider,
-    private val termsRepo: SharedPreferencesTermsRepo
+    private val gifProvider: GifProvider,
+    private val termsRepo: SharedPreferencesTermsRepo,
+    private val gifManager: GifManager
 ) : ViewModel(), OnScrollListener {
 
     private val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
@@ -51,10 +51,12 @@ class MainViewModel(
             gifProvider
         )
 
+    private var favoriteGifs: List<GifModel> = emptyList()
+
     val searchText: MutableLiveData<String> = MutableLiveData()
 
+    private var requestJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.Main)
-    private var job: Job? = null
 
     init {
         isLoadingLiveData.value = false
@@ -65,6 +67,14 @@ class MainViewModel(
             isCloseButtonVisibleLiveData.value = it.isNotEmpty()
         }
         previousTermsLiveData.value = termsRepo.getTerms()
+
+        scope.launch {
+            gifManager.getGifsFlow().collect {
+                favoriteGifs = it
+                showGifsWithFavorite(gifModelsLiveData.value ?: emptyList())
+            }
+        }
+
         subscribeToLoader()
     }
 
@@ -112,6 +122,19 @@ class MainViewModel(
         subscribeToLoader()
     }
 
+    fun changeFavorite(model: GifModel) {
+        scope.launch {
+            try {
+                if (favoriteGifs.map { it.id }.contains(model.id))
+                    gifManager.delete(model)
+                else
+                    gifManager.addGif(model)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     private fun getTrending() {
         if (lastTerm.isNotEmpty())
             searchText.value = ""
@@ -127,7 +150,7 @@ class MainViewModel(
 
     private fun subscribeToLoader() {
         isLoadingLiveData.value = false
-        job?.cancel()
+        requestJob?.cancel()
         gifModelsLiveData.value = emptyList()
         getMoreGifs()
     }
@@ -135,9 +158,10 @@ class MainViewModel(
     private fun getMoreGifs() {
         if (isLoadingLiveData.value != true) {
             isLoadingLiveData.value = true
-            job = scope.launch {
+            requestJob = scope.launch {
                 try {
-                    gifModelsLiveData.value = gifLoader.loadMoreGifs()
+                    val models = gifLoader.loadMoreGifs()
+                    showGifsWithFavorite(models)
                 } catch (e: Throwable) {
                     exceptionListener?.invoke()
                 }
@@ -145,6 +169,14 @@ class MainViewModel(
                 isScrollEndLiveData.value = false
             }
         }
+    }
+
+    private fun showGifsWithFavorite(gifs: List<GifModel>) {
+        gifs.forEach {
+            it.isFavorite =
+                favoriteGifs.map { gifModel -> gifModel.id }.contains(it.id)
+        }
+        gifModelsLiveData.value = gifs
     }
 
     fun observeGifModels(lifecycleOwner: LifecycleOwner, observer: Observer<List<GifModel>>) {
@@ -169,6 +201,6 @@ class MainViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        job?.cancel()
+        scope.cancel()
     }
 }

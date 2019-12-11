@@ -12,7 +12,7 @@
         <import type="kotlin.Pair" />
 
         <variable
-            name="mainViewModel"
+            name="searchViewModel"
             type="io.demo.fedchenko.giphyclient.viewmodel.MainViewModel" />
     </data>
 
@@ -32,13 +32,13 @@
             android:hint="@string/small_search"
             android:imeOptions="actionSearch"
             android:inputType="textPersonName"
-            android:text="@={mainViewModel.searchText}"
-            app:arrayAdapter="@{mainViewModel.previousTerms}"
+            android:text="@={searchViewModel.searchText}"
+            app:arrayAdapter="@{searchViewModel.previousTerms}"
             app:layout_constraintEnd_toStartOf="@+id/imageView"
             app:layout_constraintStart_toEndOf="@+id/trendingImage"
             app:layout_constraintTop_toTopOf="parent"
-            app:onItemClick="@{mainViewModel::search}"
-            app:searchListener="@{mainViewModel::search}" />
+            app:onItemClick="@{searchViewModel::search}"
+            app:searchListener="@{searchViewModel::search}" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLayout"
@@ -49,15 +49,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchField"
-            app:onRefresh="@{mainViewModel::refresh}"
-            app:refreshing="@{mainViewModel.isLoading() &amp; mainViewModel.gifModelsCount == 0}">
+            app:onRefresh="@{searchViewModel::refresh}"
+            app:refreshing="@{searchViewModel.isLoading() &amp; searchViewModel.gifModelsCount == 0}">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:overScrollMode="never"
-                app:onScrollListener="@{mainViewModel}"
+                app:onScrollListener="@{searchViewModel}"
                 app:reverseLayout="true" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -79,8 +79,8 @@
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="8dp"
             android:background="@null"
-            android:onClick="@{()->mainViewModel.clean()}"
-            android:visibility="@{mainViewModel.isCloseButtonVisible ? View.VISIBLE : View.GONE}"
+            android:onClick="@{()->searchViewModel.clean()}"
+            android:visibility="@{searchViewModel.isCloseButtonVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@+id/searchField"
             app:layout_constraintEnd_toEndOf="@+id/searchField"
             app:srcCompat="@android:drawable/ic_delete" />
@@ -92,7 +92,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:clickable="true"
-            android:onClick="@{()->mainViewModel.search()}"
+            android:onClick="@{()->searchViewModel.search()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:drawable/ic_search_category_default" />
@@ -104,7 +104,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:visibility='@{mainViewModel.isLoading() &amp; mainViewModel.isScrollEnd() &amp; mainViewModel.gifModelsCount != 0 ? View.VISIBLE : View.GONE}'
+            android:visibility='@{searchViewModel.isLoading() &amp; searchViewModel.isScrollEnd() &amp; searchViewModel.gifModelsCount != 0 ? View.VISIBLE : View.GONE}'
             app:cardCornerRadius="4dp"
             app:cardElevation="2dp"
             app:layout_constraintBottom_toBottomOf="parent"

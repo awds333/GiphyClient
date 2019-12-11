@@ -12,9 +12,14 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.databinding.FavoriteFragmentBinding
+import io.demo.fedchenko.giphyclient.viewmodel.FavoriteViewModel
 import kotlinx.android.synthetic.main.favorite_fragment.*
+import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class FavoriteFragment : Fragment() {
+
+    private val favoriteViewModel: FavoriteViewModel by viewModel { parametersOf(context!!.applicationContext) }
 
     private lateinit var binding: FavoriteFragmentBinding
     private lateinit var layoutManager: StaggeredGridLayoutManager
@@ -40,5 +45,7 @@ class FavoriteFragment : Fragment() {
         favoriteRecycler.layoutManager = layoutManager
 
         adapter = GifListAdapter(spanCount)
+        favoriteRecycler.adapter = adapter
+        favoriteViewModel.observeGifModels(this, adapter.gifModelsObserver)
     }
 }

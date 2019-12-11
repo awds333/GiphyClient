@@ -19,6 +19,9 @@ class GifNotParsedModel {
 
     @SerializedName("import_datetime")
     val importDateTime: String = ""
+
+    @SerializedName("id")
+    val id: String = ""
 }
 
 class Images {
