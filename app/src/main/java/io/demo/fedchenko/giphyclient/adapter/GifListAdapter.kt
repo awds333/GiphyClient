@@ -1,6 +1,5 @@
 package io.demo.fedchenko.giphyclient.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +24,6 @@ class GifListAdapter(private val span: Int) :
         val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 return oldModels[oldItemPosition].id == gifModels[newItemPosition].id
-                        && oldModels[oldItemPosition].isFavorite == gifModels[newItemPosition].isFavorite
             }
 
             override fun getOldListSize(): Int {
@@ -37,8 +35,7 @@ class GifListAdapter(private val span: Int) :
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return oldModels[oldItemPosition] == gifModels[newItemPosition]
-                        && oldModels[oldItemPosition].isFavorite == gifModels[newItemPosition].isFavorite
+                return oldModels[oldItemPosition].isFavorite == gifModels[newItemPosition].isFavorite
             }
         })
         diff.dispatchUpdatesTo(this)
@@ -78,6 +75,5 @@ class GifListAdapter(private val span: Int) :
         }
         holder.binding.gifModel = model
         holder.binding.executePendingBindings()
-        Log.d("taggg", model.isFavorite.toString())
     }
 }

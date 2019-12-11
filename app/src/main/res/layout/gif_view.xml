@@ -59,7 +59,7 @@
                     android:layout_gravity="top|right"
                     android:padding="8dp"
                     android:onClick="@{favoriteClickListener}"
-                    app:srcCompat="@android:drawable/btn_star_big_off" />
+                    app:src="@{gifModel.favorite ? @android:drawable/btn_star_big_on : @android:drawable/btn_star_big_off}" />
             </FrameLayout>
 
             <LinearLayout

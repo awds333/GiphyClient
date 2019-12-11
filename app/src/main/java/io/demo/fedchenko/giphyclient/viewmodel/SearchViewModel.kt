@@ -51,7 +51,7 @@ class MainViewModel(
             gifProvider
         )
 
-    private var favoriteGifs: List<GifModel> = emptyList()
+    private var favoriteGifsIds: List<String> = emptyList()
 
     val searchText: MutableLiveData<String> = MutableLiveData()
 
@@ -70,7 +70,7 @@ class MainViewModel(
 
         scope.launch {
             gifManager.getGifsFlow().collect {
-                favoriteGifs = it
+                favoriteGifsIds = it.map { gifModel -> gifModel.id }
                 showGifsWithFavorite(gifModelsLiveData.value ?: emptyList())
             }
         }
@@ -125,7 +125,7 @@ class MainViewModel(
     fun changeFavorite(model: GifModel) {
         scope.launch {
             try {
-                if (favoriteGifs.map { it.id }.contains(model.id))
+                if (favoriteGifsIds.contains(model.id))
                     gifManager.delete(model)
                 else
                     gifManager.addGif(model)
@@ -172,11 +172,9 @@ class MainViewModel(
     }
 
     private fun showGifsWithFavorite(gifs: List<GifModel>) {
-        gifs.forEach {
-            it.isFavorite =
-                favoriteGifs.map { gifModel -> gifModel.id }.contains(it.id)
+        gifModelsLiveData.value = gifs.map {
+            it.copy(isFavorite = favoriteGifsIds.contains(it.id))
         }
-        gifModelsLiveData.value = gifs
     }
 
     fun observeGifModels(lifecycleOwner: LifecycleOwner, observer: Observer<List<GifModel>>) {

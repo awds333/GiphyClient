@@ -7,6 +7,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -19,6 +20,7 @@ import com.bumptech.glide.request.target.GlideDrawableImageViewTarget
 import io.demo.fedchenko.giphyclient.model.GifProperties
 import io.demo.fedchenko.giphyclient.viewmodel.OnScrollListener
 import kotlinx.android.synthetic.main.gif_image_view.view.*
+
 
 @BindingAdapter("customUrl", "placeHolder")
 fun loadGif(view: View, url: String?, placeholder: Drawable? = null) {
@@ -126,4 +128,9 @@ fun setOnRefresh(view: SwipeRefreshLayout, action: () -> Unit) {
 @BindingAdapter("refreshing")
 fun setRefreshing(view: SwipeRefreshLayout, refreshing: Boolean) {
     view.isRefreshing = refreshing
+}
+
+@BindingAdapter("src")
+fun setImageDrawable(view: ImageView, drawable: Drawable?) {
+    view.setImageDrawable(drawable)
 }
