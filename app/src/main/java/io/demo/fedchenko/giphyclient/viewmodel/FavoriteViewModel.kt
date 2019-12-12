@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import io.demo.fedchenko.giphyclient.model.GifModel
-import io.demo.fedchenko.giphyclient.repository.GifManager
+import io.demo.fedchenko.giphyclient.repository.FavoriteManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class FavoriteViewModel(private val gifManager: GifManager) : ViewModel() {
+class FavoriteViewModel(private val favoriteManager: FavoriteManager) : ViewModel() {
 
     private val gifModelsLiveData: MutableLiveData<List<GifModel>> = MutableLiveData()
     private val scope = CoroutineScope(Dispatchers.Main)
@@ -22,7 +22,7 @@ class FavoriteViewModel(private val gifManager: GifManager) : ViewModel() {
         gifModelsLiveData.value = emptyList()
 
         scope.launch {
-            gifManager.getGifsFlow().collect {
+            favoriteManager.getGifsFlow().collect {
                 gifModelsLiveData.value = it
             }
         }
@@ -32,9 +32,9 @@ class FavoriteViewModel(private val gifManager: GifManager) : ViewModel() {
         scope.launch {
             try {
                 if (gifModelsLiveData.value!!.map { it.id }.contains(model.id))
-                    gifManager.delete(model)
+                    favoriteManager.delete(model)
                 else
-                    gifManager.addGif(model)
+                    favoriteManager.addGif(model)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

@@ -2,9 +2,9 @@ package io.demo.fedchenko.giphyclient.viewmodel
 
 import androidx.lifecycle.*
 import io.demo.fedchenko.giphyclient.model.GifModel
-import io.demo.fedchenko.giphyclient.repository.GifManager
+import io.demo.fedchenko.giphyclient.repository.FavoriteManager
 import io.demo.fedchenko.giphyclient.repository.GifProvider
-import io.demo.fedchenko.giphyclient.repository.SharedPreferencesTermsRepo
+import io.demo.fedchenko.giphyclient.repository.TermsManager
 import io.demo.fedchenko.giphyclient.repository.loader.GifLoader
 import io.demo.fedchenko.giphyclient.repository.loader.SearchGifLoader
 import io.demo.fedchenko.giphyclient.repository.loader.TrendingGifLoader
@@ -17,8 +17,8 @@ interface OnScrollListener {
 
 class MainViewModel(
     private val gifProvider: GifProvider,
-    private val termsRepo: SharedPreferencesTermsRepo,
-    private val gifManager: GifManager
+    private val termsManager: TermsManager,
+    private val favoriteManager: FavoriteManager
 ) : ViewModel(), OnScrollListener {
 
     private val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
@@ -63,13 +63,19 @@ class MainViewModel(
         gifModelsLiveData.value = emptyList()
         isCloseButtonVisibleLiveData.value = false
         isScrollEndLiveData.value = false
+        previousTermsLiveData.value = emptyList()
         searchText.observeForever {
             isCloseButtonVisibleLiveData.value = it.isNotEmpty()
         }
-        previousTermsLiveData.value = termsRepo.getTerms()
 
         scope.launch {
-            gifManager.getGifsFlow().collect {
+            termsManager.getTerms().collect {
+                previousTermsLiveData.value = it
+            }
+        }
+
+        scope.launch {
+            favoriteManager.getGifsFlow().collect {
                 favoriteGifsIds = it.map { gifModel -> gifModel.id }
                 showGifsWithFavorite(gifModelsLiveData.value ?: emptyList())
             }
@@ -98,8 +104,9 @@ class MainViewModel(
                 trimTerm
             )
         if (previousTermsLiveData.value?.contains(trimTerm) != true) {
-            previousTermsLiveData.value = (previousTermsLiveData.value ?: emptyList()) + trimTerm
-            termsRepo.saveTerms(previousTermsLiveData.value ?: emptyList())
+            scope.launch {
+                termsManager.saveTerm(trimTerm)
+            }
         }
         subscribeToLoader()
     }
