@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".view.RootActivity">
+        <activity android:name=".view.activity.RootActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.GifViewActivity"
+            android:name=".view.activity.GifViewActivity"
             android:theme="@style/TransparentTheme" />
     </application>
 

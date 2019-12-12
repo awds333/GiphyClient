@@ -18,13 +18,25 @@ class FavoriteViewModel(private val gifManager: GifManager) : ViewModel() {
     private val scope = CoroutineScope(Dispatchers.Main)
 
 
-
     init {
         gifModelsLiveData.value = emptyList()
 
         scope.launch {
             gifManager.getGifsFlow().collect {
                 gifModelsLiveData.value = it
+            }
+        }
+    }
+
+    fun changeFavorite(model: GifModel) {
+        scope.launch {
+            try {
+                if (gifModelsLiveData.value!!.map { it.id }.contains(model.id))
+                    gifManager.delete(model)
+                else
+                    gifManager.addGif(model)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

@@ -1,4 +1,4 @@
-package io.demo.fedchenko.giphyclient.view
+package io.demo.fedchenko.giphyclient.view.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import io.demo.fedchenko.giphyclient.R
+import io.demo.fedchenko.giphyclient.view.fregment.FavoriteFragment
+import io.demo.fedchenko.giphyclient.view.fregment.SearchFragment
 import kotlinx.android.synthetic.main.activity_root.*
 
 class RootActivity : AppCompatActivity() {
@@ -14,7 +16,10 @@ class RootActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_root)
-        viewPager.adapter = RootPageAdapter(supportFragmentManager)
+        viewPager.adapter =
+            RootPageAdapter(
+                supportFragmentManager
+            )
         bottomNavigationView.setOnNavigationItemSelectedListener {
             viewPager.setCurrentItem(it.order, true)
             true

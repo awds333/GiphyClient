@@ -1,4 +1,4 @@
-package io.demo.fedchenko.giphyclient.view
+package io.demo.fedchenko.giphyclient.view.fregment
 
 import android.content.Context
 import android.content.res.Configuration
@@ -24,6 +24,9 @@ import io.demo.fedchenko.giphyclient.ConnectivityLiveData
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.databinding.SearchFragmentBinding
+import io.demo.fedchenko.giphyclient.view.activity.GifViewActivity
+import io.demo.fedchenko.giphyclient.view.dialog.NoConnectionDialog
+import io.demo.fedchenko.giphyclient.viewmodel.FavoriteViewModel
 import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 import kotlinx.android.synthetic.main.search_fragment.*
@@ -33,6 +36,7 @@ import org.koin.core.parameter.parametersOf
 
 class SearchFragment : Fragment() {
 
+    private val favoriteViewModel: FavoriteViewModel by viewModel { parametersOf(context!!.applicationContext) }
     private val searchViewModel: MainViewModel by viewModel {
         parametersOf(
             activity!!.getSharedPreferences(
@@ -49,9 +53,10 @@ class SearchFragment : Fragment() {
 
     private var lastEmpty = false
 
-    private val noConnectionDialog = NoConnectionDialog().apply {
-        isCancelable = false
-    }
+    private val noConnectionDialog = NoConnectionDialog()
+        .apply {
+            isCancelable = false
+        }
 
     private val connectivityLiveData: LiveData<Boolean> by inject<ConnectivityLiveData> {
         parametersOf(
@@ -133,7 +138,7 @@ class SearchFragment : Fragment() {
             )
         }
         adapter.setOnItemFavoriteClickListener { _, gifModel ->
-            searchViewModel.changeFavorite(gifModel)
+            favoriteViewModel.changeFavorite(gifModel)
         }
 
         recycler.adapter = adapter
@@ -175,7 +180,7 @@ class SearchFragment : Fragment() {
 
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState?.apply {
+        outState.apply {
             val firstVisible = layoutManager.findFirstVisibleItemPositions(IntArray(3))
             if (firstVisible.isNotEmpty())
                 this.putInt("first_visible", firstVisible[0])

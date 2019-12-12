@@ -1,4 +1,4 @@
-package io.demo.fedchenko.giphyclient.view
+package io.demo.fedchenko.giphyclient.view.dialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,7 +15,8 @@ class GifInfoDialogFragment : DialogFragment() {
         const val MODEL = "model"
 
         fun create(model: GifModel): GifInfoDialogFragment {
-            val gifInfoDialog = GifInfoDialogFragment()
+            val gifInfoDialog =
+                GifInfoDialogFragment()
             val args = Bundle()
 
             args.putParcelable(MODEL, model)

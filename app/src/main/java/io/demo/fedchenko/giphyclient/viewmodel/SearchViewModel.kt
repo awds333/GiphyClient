@@ -122,19 +122,6 @@ class MainViewModel(
         subscribeToLoader()
     }
 
-    fun changeFavorite(model: GifModel) {
-        scope.launch {
-            try {
-                if (favoriteGifsIds.contains(model.id))
-                    gifManager.delete(model)
-                else
-                    gifManager.addGif(model)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
     private fun getTrending() {
         if (lastTerm.isNotEmpty())
             searchText.value = ""

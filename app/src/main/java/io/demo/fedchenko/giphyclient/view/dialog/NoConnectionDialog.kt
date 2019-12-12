@@ -1,4 +1,4 @@
-package io.demo.fedchenko.giphyclient.view
+package io.demo.fedchenko.giphyclient.view.dialog
 
 import android.os.Bundle
 import android.view.LayoutInflater

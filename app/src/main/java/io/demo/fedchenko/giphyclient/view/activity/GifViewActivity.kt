@@ -1,4 +1,4 @@
-package io.demo.fedchenko.giphyclient.view
+package io.demo.fedchenko.giphyclient.view.activity
 
 import android.app.Activity
 import android.content.Context
@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import io.demo.fedchenko.giphyclient.databinding.ActivityGifViewBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
+import io.demo.fedchenko.giphyclient.view.dialog.GifInfoDialogFragment
 import kotlinx.android.synthetic.main.activity_gif_view.*
 import kotlinx.android.synthetic.main.gif_image_view.*
 
@@ -31,11 +32,12 @@ class GifViewActivity : AppCompatActivity() {
         private var bitmap: Bitmap? = null
 
         fun start(model: GifModel, bitmap: Bitmap, context: Context, bundle: Bundle?) {
-            this.bitmap = bitmap
+            Companion.bitmap = bitmap
             val intent = Intent(context, GifViewActivity::class.java)
                 .putExtra(MODEL, model)
 
-            (context as Activity).startActivityForResult(intent, REQUEST_CODE, bundle)
+            (context as Activity).startActivityForResult(intent,
+                REQUEST_CODE, bundle)
         }
     }
 
@@ -86,7 +88,10 @@ class GifViewActivity : AppCompatActivity() {
             areButtonsVisible = false
 
             onInfoClick = View.OnClickListener {
-                val infoDialog: GifInfoDialogFragment = GifInfoDialogFragment.create(model)
+                val infoDialog: GifInfoDialogFragment =
+                    GifInfoDialogFragment.create(
+                        model
+                    )
                 infoDialog.show(supportFragmentManager, "info_dialog")
             }
 
