@@ -16,31 +16,23 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.drawToBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import io.demo.fedchenko.giphyclient.ConnectivityLiveData
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.databinding.SearchFragmentBinding
 import io.demo.fedchenko.giphyclient.view.activity.GifViewActivity
-import io.demo.fedchenko.giphyclient.view.dialog.NoConnectionDialog
 import io.demo.fedchenko.giphyclient.viewmodel.FavoriteViewModel
 import io.demo.fedchenko.giphyclient.viewmodel.SearchViewModel
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 import kotlinx.android.synthetic.main.search_fragment.*
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class SearchFragment : Fragment() {
+class SearchFragment : GifRecyclerFragment() {
 
-    private val favoriteViewModel: FavoriteViewModel by viewModel { parametersOf(context!!.applicationContext) }
     private val searchViewModel: SearchViewModel by viewModel { parametersOf(context!!.applicationContext) }
-    
-    private lateinit var adapter: GifListAdapter
-    private lateinit var layoutManager: StaggeredGridLayoutManager
 
     private lateinit var binding: SearchFragmentBinding
 
@@ -62,8 +54,6 @@ class SearchFragment : Fragment() {
         )
     }
 
-    private var scrollPosition = 0
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,55 +63,11 @@ class SearchFragment : Fragment() {
         return binding.root
     }
 
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    override fun bind() {
         binding.lifecycleOwner = this
         binding.searchViewModel = searchViewModel
 
-        val spanCount =
-            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 3
-        layoutManager = StaggeredGridLayoutManager(
-            spanCount,
-            LinearLayoutManager.VERTICAL
-        )
         recycler.layoutManager = layoutManager
-
-        adapter = GifListAdapter(spanCount)
-        adapter.setOnItemClickListener { view, model ->
-            val bitmap =
-                if (view.isLaidOut && view.circlePogressBar.visibility == View.GONE)
-                    view.drawToBitmap()
-                else {
-                    val bitmap = Bitmap.createBitmap(
-                        model.preview.width,
-                        model.preview.height,
-                        Bitmap.Config.ARGB_8888
-                    )
-                    val canvas = Canvas(bitmap)
-                    val paint = Paint()
-                    paint.color = Color.GRAY
-                    canvas.drawRect(
-                        0f, 0f,
-                        model.preview.width.toFloat(), model.preview.height.toFloat(), paint
-                    )
-                    bitmap
-                }
-
-            val activityOptionsCompat =
-                ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    activity!!, view, "gifImageView"
-                )
-
-            GifViewActivity.start(
-                model,
-                bitmap,
-                activity!!,
-                activityOptionsCompat.toBundle()
-            )
-        }
-        adapter.setOnItemFavoriteClickListener { _, gifModel ->
-            favoriteViewModel.changeFavorite(gifModel)
-        }
 
         recycler.adapter = adapter
         recycler.post {
@@ -143,21 +89,6 @@ class SearchFragment : Fragment() {
                     }
                 }
             })
-
-        super.onActivityCreated(savedInstanceState)
-        savedInstanceState?.also {
-            scrollPosition = it.getInt("first_visible", 0)
-        }
-    }
-
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.apply {
-            val firstVisible = layoutManager.findFirstVisibleItemPositions(IntArray(3))
-            if (firstVisible.isNotEmpty())
-                this.putInt("first_visible", firstVisible[0])
-        }
-        super.onSaveInstanceState(outState)
     }
 
     override fun onResume() {
