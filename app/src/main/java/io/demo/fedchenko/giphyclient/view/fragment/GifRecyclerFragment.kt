@@ -1,4 +1,4 @@
-package io.demo.fedchenko.giphyclient.view.fregment
+package io.demo.fedchenko.giphyclient.view.fragment
 
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -16,10 +16,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
+import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.view.activity.GifViewActivity
 import io.demo.fedchenko.giphyclient.viewmodel.FavoriteViewModel
 import io.demo.fedchenko.giphyclient.viewmodel.GifObservable
-import kotlinx.android.synthetic.main.favorite_fragment.*
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -39,51 +39,26 @@ abstract class GifRecyclerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View?
 
-    protected abstract fun getRecyclerView():RecyclerView
+    protected abstract fun getRecyclerView(): RecyclerView
 
-    protected open fun getGifObservable() : GifObservable = favoriteViewModel
+    protected open fun getGifObservable(): GifObservable = favoriteViewModel
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val spanCount =
             if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 3
-        layoutManager = StaggeredGridLayoutManager(
-            spanCount,
-            LinearLayoutManager.VERTICAL
-        )
+        layoutManager = StaggeredGridLayoutManager(spanCount, LinearLayoutManager.VERTICAL)
 
         adapter = GifListAdapter(spanCount)
         adapter.setOnItemClickListener { view, model ->
-            val bitmap =
-                if (view.isLaidOut && view.circlePogressBar.visibility == View.GONE)
-                    view.drawToBitmap()
-                else {
-                    val bitmap = Bitmap.createBitmap(
-                        model.preview.width,
-                        model.preview.height,
-                        Bitmap.Config.ARGB_8888
-                    )
-                    val canvas = Canvas(bitmap)
-                    val paint = Paint()
-                    paint.color = Color.GRAY
-                    canvas.drawRect(
-                        0f, 0f,
-                        model.preview.width.toFloat(), model.preview.height.toFloat(), paint
-                    )
-                    bitmap
-                }
+            val bitmap = getBitmap(view, model)
 
             val activityOptionsCompat =
                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                     activity!!, view, "gifImageView"
                 )
 
-            GifViewActivity.start(
-                model,
-                bitmap,
-                activity!!,
-                activityOptionsCompat.toBundle()
-            )
+            GifViewActivity.start(model, bitmap, activity!!, activityOptionsCompat.toBundle())
         }
         adapter.setOnItemFavoriteClickListener { _, gifModel ->
             favoriteViewModel.changeFavorite(gifModel)
@@ -104,6 +79,27 @@ abstract class GifRecyclerFragment : Fragment() {
             recycler.scrollToPosition(scrollPosition)
         }
     }
+
+    private fun getBitmap(view: View, model: GifModel): Bitmap =
+        if (view.isLaidOut && view.circlePogressBar.visibility == View.GONE)
+            view.drawToBitmap()
+        else {
+            val bitmap = Bitmap.createBitmap(
+                model.preview.width,
+                model.preview.height,
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+            val paint = Paint()
+            paint.color = Color.GRAY
+            canvas.drawRect(
+                0f,
+                0f,
+                model.preview.width.toFloat(),
+                model.preview.height.toFloat(), paint
+            )
+            bitmap
+        }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.apply {

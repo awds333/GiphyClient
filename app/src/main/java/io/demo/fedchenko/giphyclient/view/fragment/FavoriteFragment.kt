@@ -1,4 +1,4 @@
-package io.demo.fedchenko.giphyclient.view.fregment
+package io.demo.fedchenko.giphyclient.view.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -27,7 +27,7 @@ class GifViewActivity : AppCompatActivity() {
 
     companion object {
         const val MODEL = "model"
-        const val REQUEST_CODE = 375
+        private const val REQUEST_CODE = 375
 
         private var bitmap: Bitmap? = null
 
@@ -36,8 +36,10 @@ class GifViewActivity : AppCompatActivity() {
             val intent = Intent(context, GifViewActivity::class.java)
                 .putExtra(MODEL, model)
 
-            (context as Activity).startActivityForResult(intent,
-                REQUEST_CODE, bundle)
+            (context as Activity).startActivityForResult(
+                intent,
+                REQUEST_CODE, bundle
+            )
         }
     }
 

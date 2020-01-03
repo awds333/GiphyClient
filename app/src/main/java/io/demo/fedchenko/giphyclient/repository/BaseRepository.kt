@@ -25,7 +25,6 @@ open class BaseRepository{
         }
 
         return data
-
     }
 
     private suspend fun <T: Any> safeApiResult(call: suspend ()-> Response<T>, errorMessage: String) : Result<T>{

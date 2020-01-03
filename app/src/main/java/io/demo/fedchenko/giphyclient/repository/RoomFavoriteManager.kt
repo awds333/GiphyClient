@@ -4,12 +4,11 @@ import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.model.GifProperties
 import io.demo.fedchenko.giphyclient.room.AppDataBase
 import io.demo.fedchenko.giphyclient.room.DbGif
+import io.demo.fedchenko.giphyclient.room.GifDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class RoomFavoriteManager(appDataBase: AppDataBase) : FavoriteManager {
-
-    private val gifDao = appDataBase.gifDao()
+class RoomFavoriteManager(private val gifDao: GifDao) : FavoriteManager {
 
     override suspend fun addGif(gifModel: GifModel) {
         gifDao.insertAll(gifModel.toDbGif())

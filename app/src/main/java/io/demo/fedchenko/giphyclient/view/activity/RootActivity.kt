@@ -1,9 +1,7 @@
 package io.demo.fedchenko.giphyclient.view.activity
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -13,8 +11,8 @@ import androidx.viewpager.widget.ViewPager
 import io.demo.fedchenko.giphyclient.ConnectivityLiveData
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.view.dialog.NoConnectionDialog
-import io.demo.fedchenko.giphyclient.view.fregment.FavoriteFragment
-import io.demo.fedchenko.giphyclient.view.fregment.SearchFragment
+import io.demo.fedchenko.giphyclient.view.fragment.FavoriteFragment
+import io.demo.fedchenko.giphyclient.view.fragment.SearchFragment
 import kotlinx.android.synthetic.main.activity_root.*
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -78,7 +76,7 @@ class RootActivity : AppCompatActivity() {
     }
 
     override fun onStop() {
-        if(isConnectionDialogAdded())
+        if (isConnectionDialogAdded())
             noConnectionDialog.dismiss()
         super.onStop()
     }

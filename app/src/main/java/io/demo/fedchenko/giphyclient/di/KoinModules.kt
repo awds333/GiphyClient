@@ -7,10 +7,9 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import io.demo.fedchenko.giphyclient.ConnectivityLiveData
 import io.demo.fedchenko.giphyclient.repository.GifRepository
 import io.demo.fedchenko.giphyclient.repository.RoomFavoriteManager
-import io.demo.fedchenko.giphyclient.repository.loader.RoomTermsManager
+import io.demo.fedchenko.giphyclient.repository.RoomTermsManager
 import io.demo.fedchenko.giphyclient.retrofit.GiphyAPI
 import io.demo.fedchenko.giphyclient.room.AppDataBase
-import io.demo.fedchenko.giphyclient.view.dialog.NoConnectionDialog
 import io.demo.fedchenko.giphyclient.viewmodel.FavoriteViewModel
 import io.demo.fedchenko.giphyclient.viewmodel.SearchViewModel
 import org.koin.android.viewmodel.dsl.viewModel
@@ -52,7 +51,11 @@ val repositoryModule: Module = module {
             .create(GiphyAPI::class.java)
     }
     single { (context: Context) -> RoomFavoriteManager(get { parametersOf(context) }) }
+    single { (context: Context) -> get<AppDataBase> { parametersOf(context) }.gifDao() }
+
     single { (context: Context) -> RoomTermsManager(get { parametersOf(context) }) }
+    single { (context: Context) -> get<AppDataBase> { parametersOf(context) }.termDao() }
+
     single { (context: Context) ->
         Room.databaseBuilder(context, AppDataBase::class.java, getProperty("db_name")).build()
     }
