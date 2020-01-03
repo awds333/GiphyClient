@@ -1,17 +1,40 @@
 package io.demo.fedchenko.giphyclient.view.activity
 
 import android.os.Bundle
+import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
+import io.demo.fedchenko.giphyclient.ConnectivityLiveData
 import io.demo.fedchenko.giphyclient.R
+import io.demo.fedchenko.giphyclient.view.dialog.NoConnectionDialog
 import io.demo.fedchenko.giphyclient.view.fregment.FavoriteFragment
 import io.demo.fedchenko.giphyclient.view.fregment.SearchFragment
 import kotlinx.android.synthetic.main.activity_root.*
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 
 class RootActivity : AppCompatActivity() {
+
+    companion object Tags {
+        const val NO_CONNECTION_DIALOG_TAG = "noConnectionTag"
+    }
+
+    private val connectivityLiveData: LiveData<Boolean> by inject<ConnectivityLiveData> {
+        parametersOf(
+            application
+        )
+    }
+
+    private val noConnectionDialog = NoConnectionDialog().apply {
+        isCancelable = false
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +54,8 @@ class RootActivity : AppCompatActivity() {
                 position: Int,
                 positionOffset: Float,
                 positionOffsetPixels: Int
-            ) {}
+            ) {
+            }
 
             override fun onPageSelected(position: Int) {
                 bottomNavigationView.selectedItemId = when (position) {
@@ -42,10 +66,30 @@ class RootActivity : AppCompatActivity() {
             }
 
         })
+        connectivityLiveData.observe(this, Observer {
+            if (it) {
+                if (isConnectionDialogAdded())
+                    noConnectionDialog.dismiss()
+            } else {
+                if (!isConnectionDialogAdded())
+                    noConnectionDialog.show(supportFragmentManager, NO_CONNECTION_DIALOG_TAG)
+            }
+        })
+    }
+
+    override fun onStop() {
+        if(isConnectionDialogAdded())
+            noConnectionDialog.dismiss()
+        super.onStop()
+    }
+
+    private fun isConnectionDialogAdded(): Boolean {
+        return supportFragmentManager.findFragmentByTag(NO_CONNECTION_DIALOG_TAG) != null
     }
 }
 
-class RootPageAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+class RootPageAdapter(fm: FragmentManager) :
+    FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     override fun getItem(position: Int): Fragment {
         return when (position) {

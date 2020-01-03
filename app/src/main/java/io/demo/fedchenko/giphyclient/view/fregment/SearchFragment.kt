@@ -27,7 +27,7 @@ import io.demo.fedchenko.giphyclient.databinding.SearchFragmentBinding
 import io.demo.fedchenko.giphyclient.view.activity.GifViewActivity
 import io.demo.fedchenko.giphyclient.view.dialog.NoConnectionDialog
 import io.demo.fedchenko.giphyclient.viewmodel.FavoriteViewModel
-import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
+import io.demo.fedchenko.giphyclient.viewmodel.SearchViewModel
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 import kotlinx.android.synthetic.main.search_fragment.*
 import org.koin.android.ext.android.inject
@@ -37,32 +37,14 @@ import org.koin.core.parameter.parametersOf
 class SearchFragment : Fragment() {
 
     private val favoriteViewModel: FavoriteViewModel by viewModel { parametersOf(context!!.applicationContext) }
-    private val searchViewModel: MainViewModel by viewModel {
-        parametersOf(
-            activity!!.getSharedPreferences(
-                getString(R.string.app_name),
-                Context.MODE_PRIVATE
-            ),
-            context!!.applicationContext
-        )
-    }
+    private val searchViewModel: SearchViewModel by viewModel { parametersOf(context!!.applicationContext) }
+    
     private lateinit var adapter: GifListAdapter
     private lateinit var layoutManager: StaggeredGridLayoutManager
 
     private lateinit var binding: SearchFragmentBinding
 
     private var lastEmpty = false
-
-    private val noConnectionDialog = NoConnectionDialog()
-        .apply {
-            isCancelable = false
-        }
-
-    private val connectivityLiveData: LiveData<Boolean> by inject<ConnectivityLiveData> {
-        parametersOf(
-            activity!!.application
-        )
-    }
 
     private val exceptionListener = {
         Toast.makeText(
@@ -146,16 +128,6 @@ class SearchFragment : Fragment() {
             searchViewModel.observeGifModels(this, adapter.gifModelsObserver)
             recycler.scrollToPosition(scrollPosition)
         }
-
-        connectivityLiveData.observe(this, Observer {
-            if (it) {
-                if (noConnectionDialog.isResumed)
-                    noConnectionDialog.dismiss()
-            } else {
-                if (!noConnectionDialog.isResumed)
-                    noConnectionDialog.show(fragmentManager, "")
-            }
-        })
 
         searchViewModel.observeGifModels(this,
             Observer { t ->

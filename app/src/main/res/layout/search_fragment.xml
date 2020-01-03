@@ -13,7 +13,7 @@
 
         <variable
             name="searchViewModel"
-            type="io.demo.fedchenko.giphyclient.viewmodel.MainViewModel" />
+            type="io.demo.fedchenko.giphyclient.viewmodel.SearchViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

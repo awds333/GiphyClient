@@ -2,7 +2,6 @@ package io.demo.fedchenko.giphyclient.di
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.room.Room
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import io.demo.fedchenko.giphyclient.ConnectivityLiveData
@@ -11,8 +10,9 @@ import io.demo.fedchenko.giphyclient.repository.RoomFavoriteManager
 import io.demo.fedchenko.giphyclient.repository.loader.RoomTermsManager
 import io.demo.fedchenko.giphyclient.retrofit.GiphyAPI
 import io.demo.fedchenko.giphyclient.room.AppDataBase
+import io.demo.fedchenko.giphyclient.view.dialog.NoConnectionDialog
 import io.demo.fedchenko.giphyclient.viewmodel.FavoriteViewModel
-import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
+import io.demo.fedchenko.giphyclient.viewmodel.SearchViewModel
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
@@ -21,8 +21,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val viewModelModule: Module = module {
-    viewModel { (preferences: SharedPreferences, context: Context) ->
-        MainViewModel(
+    viewModel { (context: Context) ->
+        SearchViewModel(
             get<GifRepository>(),
             get<RoomTermsManager> { parametersOf(context) },
             get<RoomFavoriteManager> { parametersOf(context) })

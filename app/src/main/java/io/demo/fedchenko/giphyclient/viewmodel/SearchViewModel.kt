@@ -15,7 +15,7 @@ interface OnScrollListener {
     fun onScroll(position: Int)
 }
 
-class MainViewModel(
+class SearchViewModel(
     private val gifProvider: GifProvider,
     private val termsManager: TermsManager,
     private val favoriteManager: FavoriteManager
