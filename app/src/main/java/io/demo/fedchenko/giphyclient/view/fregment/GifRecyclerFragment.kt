@@ -13,22 +13,25 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.view.activity.GifViewActivity
 import io.demo.fedchenko.giphyclient.viewmodel.FavoriteViewModel
+import io.demo.fedchenko.giphyclient.viewmodel.GifObservable
+import kotlinx.android.synthetic.main.favorite_fragment.*
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 abstract class GifRecyclerFragment : Fragment() {
 
-    protected val favoriteViewModel: FavoriteViewModel by viewModel { parametersOf(context!!.applicationContext) }
+    private val favoriteViewModel: FavoriteViewModel by viewModel { parametersOf(context!!.applicationContext) }
 
-    protected lateinit var layoutManager: StaggeredGridLayoutManager
-    protected lateinit var adapter: GifListAdapter
+    private lateinit var layoutManager: StaggeredGridLayoutManager
+    private lateinit var adapter: GifListAdapter
 
-    protected var scrollPosition = 0
+    private var scrollPosition = 0
 
     abstract override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,7 +39,9 @@ abstract class GifRecyclerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View?
 
-    abstract fun bind()
+    protected abstract fun getRecyclerView():RecyclerView
+
+    protected open fun getGifObservable() : GifObservable = favoriteViewModel
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -88,7 +93,16 @@ abstract class GifRecyclerFragment : Fragment() {
             scrollPosition = it.getInt("first_visible", 0)
         }
 
-        bind()
+        val recycler = getRecyclerView()
+
+        recycler.layoutManager = layoutManager
+
+        recycler.adapter = adapter
+
+        recycler.post {
+            getGifObservable().observeGifModels(this, adapter.gifModelsObserver)
+            recycler.scrollToPosition(scrollPosition)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

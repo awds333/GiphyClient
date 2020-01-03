@@ -19,7 +19,7 @@ class SearchViewModel(
     private val gifProvider: GifProvider,
     private val termsManager: TermsManager,
     private val favoriteManager: FavoriteManager
-) : ViewModel(), OnScrollListener {
+) : ViewModel(), OnScrollListener, GifObservable {
 
     private val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val isLoading: LiveData<Boolean>
@@ -171,7 +171,7 @@ class SearchViewModel(
         }
     }
 
-    fun observeGifModels(lifecycleOwner: LifecycleOwner, observer: Observer<List<GifModel>>) {
+    override fun observeGifModels(lifecycleOwner: LifecycleOwner, observer: Observer<List<GifModel>>) {
         gifModelsLiveData.observe(lifecycleOwner, observer)
     }
 

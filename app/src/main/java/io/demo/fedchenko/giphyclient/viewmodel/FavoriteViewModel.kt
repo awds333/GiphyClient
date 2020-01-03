@@ -12,7 +12,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class FavoriteViewModel(private val favoriteManager: FavoriteManager) : ViewModel() {
+class FavoriteViewModel(private val favoriteManager: FavoriteManager) : ViewModel(), GifObservable {
 
     private val gifModelsLiveData: MutableLiveData<List<GifModel>> = MutableLiveData()
     private val scope = CoroutineScope(Dispatchers.Main)
@@ -41,7 +41,7 @@ class FavoriteViewModel(private val favoriteManager: FavoriteManager) : ViewMode
         }
     }
 
-    fun observeGifModels(lifecycleOwner: LifecycleOwner, observer: Observer<List<GifModel>>) {
+    override fun observeGifModels(lifecycleOwner: LifecycleOwner, observer: Observer<List<GifModel>>) {
         gifModelsLiveData.observe(lifecycleOwner, observer)
     }
 

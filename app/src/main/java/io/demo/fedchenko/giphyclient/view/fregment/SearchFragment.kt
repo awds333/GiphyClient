@@ -18,12 +18,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.adapter.GifListAdapter
 import io.demo.fedchenko.giphyclient.databinding.SearchFragmentBinding
 import io.demo.fedchenko.giphyclient.view.activity.GifViewActivity
 import io.demo.fedchenko.giphyclient.viewmodel.FavoriteViewModel
+import io.demo.fedchenko.giphyclient.viewmodel.GifObservable
 import io.demo.fedchenko.giphyclient.viewmodel.SearchViewModel
 import kotlinx.android.synthetic.main.gif_image_view.view.*
 import kotlinx.android.synthetic.main.search_fragment.*
@@ -54,6 +56,10 @@ class SearchFragment : GifRecyclerFragment() {
         )
     }
 
+    override fun getRecyclerView(): RecyclerView = recycler
+
+    override fun getGifObservable(): GifObservable = searchViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,17 +69,10 @@ class SearchFragment : GifRecyclerFragment() {
         return binding.root
     }
 
-    override fun bind() {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         binding.lifecycleOwner = this
         binding.searchViewModel = searchViewModel
-
-        recycler.layoutManager = layoutManager
-
-        recycler.adapter = adapter
-        recycler.post {
-            searchViewModel.observeGifModels(this, adapter.gifModelsObserver)
-            recycler.scrollToPosition(scrollPosition)
-        }
 
         searchViewModel.observeGifModels(this,
             Observer { t ->
