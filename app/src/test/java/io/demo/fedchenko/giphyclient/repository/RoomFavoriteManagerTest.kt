@@ -19,21 +19,18 @@ class RoomFavoriteManagerTest {
     private var publisher = ConflatedBroadcastChannel(emptyList<DbGif>())
     private var roomFavoriteManager = RoomFavoriteManager(gifDao)
 
-    private val dbGifsList1 = listOf(
-        DbGif(
-            "10".hashCode().toLong(), "10", "title1", "u1", "t1", 20, 30,
-            "org1", 100, 15, 25, "prev1", 85
-        ),
-        DbGif(
-            "13".hashCode().toLong(), "13", "title2", "u2", "t2", 22, 32,
-            "org2", 120, 17, 27, "prev2", 95
-        )
+
+    private val dbGif1 = DbGif(
+        "10".hashCode().toLong(), "10", "title1", "u1", "t1", 20, 30,
+        "org1", 100, 15, 25, "prev1", 85
     )
-    private val dbGifsList2 = listOf(
-        DbGif(
-            "14".hashCode().toLong(), "14", "title3", "u3", "t3", 23, 33,
-            "org3", 130, 18, 28, "prev3", 78
-        )
+    private val dbGif2 = DbGif(
+        "13".hashCode().toLong(), "13", "title2", "u2", "t2", 22, 32,
+        "org2", 120, 17, 27, "prev2", 95
+    )
+    private val dbGif3 = DbGif(
+        "14".hashCode().toLong(), "14", "title3", "u3", "t3", 23, 33,
+        "org3", 130, 18, 28, "prev3", 78
     )
 
     private fun gifModelFromDbGif(dbGif: DbGif): GifModel = GifModel(
@@ -73,20 +70,20 @@ class RoomFavoriteManagerTest {
         initRoomFavoriteManager()
 
         runBlocking {
-            publisher.offer(dbGifsList1)
+            publisher.offer(listOf(dbGif1, dbGif2))
             roomFavoriteManager.getGifsFlow().take(1).collect {
                 assert(
                     it == listOf(
-                        gifModelFromDbGif(dbGifsList1[0]),
-                        gifModelFromDbGif(dbGifsList1[1])
+                        gifModelFromDbGif(dbGif1),
+                        gifModelFromDbGif(dbGif2)
                     )
                 )
             }
-            publisher.offer(dbGifsList2)
+            publisher.offer(listOf(dbGif3))
             roomFavoriteManager.getGifsFlow().take(1).collect {
                 assert(
                     it == listOf(
-                        gifModelFromDbGif(dbGifsList2[0])
+                        gifModelFromDbGif(dbGif3)
                     )
                 )
             }
@@ -142,8 +139,8 @@ class RoomFavoriteManagerTest {
     fun addGif() {
         initEmptyRoomFavoriteManager()
         runBlocking {
-            roomFavoriteManager.addGif(gifModelFromDbGif(dbGifsList1[0]))
-            Mockito.verify(gifDao, times(1)).insertAll(dbGifsList1[0])
+            roomFavoriteManager.addGif(gifModelFromDbGif(dbGif1))
+            Mockito.verify(gifDao, times(1)).insertAll(dbGif1)
         }
     }
 
@@ -151,8 +148,8 @@ class RoomFavoriteManagerTest {
     fun deleteGif() {
         initEmptyRoomFavoriteManager()
         runBlocking {
-            roomFavoriteManager.delete(gifModelFromDbGif(dbGifsList1[0]))
-            Mockito.verify(gifDao, times(1)).delete(dbGifsList1[0])
+            roomFavoriteManager.delete(gifModelFromDbGif(dbGif1))
+            Mockito.verify(gifDao, times(1)).delete(dbGif1)
         }
     }
 }
