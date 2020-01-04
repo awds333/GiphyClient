@@ -11,7 +11,7 @@ import io.demo.fedchenko.giphyclient.repository.RoomTermsManager
 import io.demo.fedchenko.giphyclient.retrofit.GiphyAPI
 import io.demo.fedchenko.giphyclient.room.AppDataBase
 import io.demo.fedchenko.giphyclient.viewmodel.FavoriteViewModel
-import io.demo.fedchenko.giphyclient.viewmodel.SearchViewModel
+import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
@@ -21,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val viewModelModule: Module = module {
     viewModel { (context: Context) ->
-        SearchViewModel(
+        MainViewModel(
             get<GifRepository>(),
             get<RoomTermsManager> { parametersOf(context) },
             get<RoomFavoriteManager> { parametersOf(context) })

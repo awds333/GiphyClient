@@ -4,7 +4,7 @@
         android:id="@+id/search_menu_item"
         android:icon="@drawable/ic_search_black_24dp"
         android:orderInCategory="0"
-        android:title="@string/search" />
+        android:title="@string/trending" />
     <item
         android:id="@+id/favorite_menu_item"
         android:icon="@drawable/ic_star_black_24dp"

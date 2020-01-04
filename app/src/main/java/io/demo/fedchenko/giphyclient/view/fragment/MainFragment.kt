@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.databinding.SearchFragmentBinding
 import io.demo.fedchenko.giphyclient.viewmodel.GifObservable
-import io.demo.fedchenko.giphyclient.viewmodel.SearchViewModel
+import io.demo.fedchenko.giphyclient.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.search_fragment.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class SearchFragment : GifRecyclerFragment() {
+class MainFragment : GifRecyclerFragment() {
 
-    private val searchViewModel: SearchViewModel by viewModel { parametersOf(context!!.applicationContext) }
+    private val mainViewModel: MainViewModel by viewModel { parametersOf(context!!.applicationContext) }
 
     private lateinit var binding: SearchFragmentBinding
 
@@ -44,7 +44,7 @@ class SearchFragment : GifRecyclerFragment() {
 
     override fun getRecyclerView(): RecyclerView = recycler
 
-    override fun getGifObservable(): GifObservable = searchViewModel
+    override fun getGifObservable(): GifObservable = mainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,9 +58,9 @@ class SearchFragment : GifRecyclerFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.lifecycleOwner = this
-        binding.searchViewModel = searchViewModel
+        binding.searchViewModel = mainViewModel
 
-        searchViewModel.observeGifModels(this,
+        mainViewModel.observeGifModels(this,
             Observer { t ->
                 if (t.isNullOrEmpty())
                     lastEmpty = true
@@ -78,13 +78,13 @@ class SearchFragment : GifRecyclerFragment() {
 
     override fun onResume() {
         super.onResume()
-        searchViewModel.registerExceptionsListener(exceptionListener)
-        searchViewModel.registerKeyboardListener(keyboardListener)
+        mainViewModel.registerExceptionsListener(exceptionListener)
+        mainViewModel.registerKeyboardListener(keyboardListener)
     }
 
     override fun onPause() {
         super.onPause()
-        searchViewModel.removeExceptionListener()
-        searchViewModel.removeKeyboardListener()
+        mainViewModel.removeExceptionListener()
+        mainViewModel.removeKeyboardListener()
     }
 }

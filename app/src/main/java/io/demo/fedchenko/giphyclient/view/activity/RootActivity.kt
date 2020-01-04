@@ -12,7 +12,7 @@ import io.demo.fedchenko.giphyclient.ConnectivityLiveData
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.view.dialog.NoConnectionDialog
 import io.demo.fedchenko.giphyclient.view.fragment.FavoriteFragment
-import io.demo.fedchenko.giphyclient.view.fragment.SearchFragment
+import io.demo.fedchenko.giphyclient.view.fragment.MainFragment
 import kotlinx.android.synthetic.main.activity_root.*
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -91,7 +91,7 @@ class RootPageAdapter(fm: FragmentManager) :
 
     override fun getItem(position: Int): Fragment {
         return when (position) {
-            0 -> SearchFragment()
+            0 -> MainFragment()
             1 -> FavoriteFragment()
             else -> throw Exception("No such element Exception")
         }
