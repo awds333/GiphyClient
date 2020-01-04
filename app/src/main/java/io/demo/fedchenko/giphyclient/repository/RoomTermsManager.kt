@@ -11,8 +11,6 @@ class RoomTermsManager(private val termDao: TermDao) : TermsManager {
     override fun getTerms(): Flow<List<String>> =
         termDao.getTermsFlow().map { it.mapNotNull { dbTerm -> dbTerm.term } }
 
-
     override suspend fun saveTerm(term: String) =
         termDao.addTerm(DbTerm(term.hashCode().toLong(), term))
-
 }

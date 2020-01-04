@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
+import android.provider.MediaStore.Images.Media.getBitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,7 +52,7 @@ abstract class GifRecyclerFragment : Fragment() {
 
         adapter = GifListAdapter(spanCount)
         adapter.setOnItemClickListener { view, model ->
-            val bitmap = getBitmap(view, model)
+            val bitmap = view.getBitmap(model.preview.width, model.preview.height)
 
             val activityOptionsCompat =
                 ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -80,13 +81,13 @@ abstract class GifRecyclerFragment : Fragment() {
         }
     }
 
-    private fun getBitmap(view: View, model: GifModel): Bitmap =
-        if (view.isLaidOut && view.circlePogressBar.visibility == View.GONE)
-            view.drawToBitmap()
+    private fun View.getBitmap(width: Int, height: Int): Bitmap =
+        if (this.isLaidOut && this.circlePogressBar.visibility == View.GONE)
+            this.drawToBitmap()
         else {
             val bitmap = Bitmap.createBitmap(
-                model.preview.width,
-                model.preview.height,
+                width,
+                height,
                 Bitmap.Config.ARGB_8888
             )
             val canvas = Canvas(bitmap)
@@ -95,8 +96,9 @@ abstract class GifRecyclerFragment : Fragment() {
             canvas.drawRect(
                 0f,
                 0f,
-                model.preview.width.toFloat(),
-                model.preview.height.toFloat(), paint
+                width.toFloat(),
+                height.toFloat(),
+                paint
             )
             bitmap
         }

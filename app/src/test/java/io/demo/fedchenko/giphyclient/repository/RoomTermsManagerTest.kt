@@ -11,7 +11,7 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 
-class RoomTermsManagerTests {
+class RoomTermsManagerTest {
 
     @Test
     fun getTermsNotEmpty() {
@@ -23,12 +23,11 @@ class RoomTermsManagerTests {
         val roomTermsManager = RoomTermsManager(termDao)
         val result = roomTermsManager.getTerms()
 
-        publisher.offer(listOf(DbTerm(12, "term1"), DbTerm(14, "term2")))
         runBlocking {
+            publisher.offer(listOf(DbTerm(12, "term1"), DbTerm(14, "term2")))
             result.take(1).collect { assert(it == listOf("term1", "term2")) }
 
-            publisher.offer(listOf(DbTerm(17,"term3")))
-
+            publisher.offer(listOf(DbTerm(17, "term3")))
             result.take(1).collect { assert(it == listOf("term3")) }
         }
     }
