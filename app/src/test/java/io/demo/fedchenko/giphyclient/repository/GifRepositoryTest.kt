@@ -47,29 +47,64 @@ class GifRepositoryTest {
         "id3"
     )
 
-    private fun fromRequestToGifModel(nonParsed: GifNotParsedModel): GifModel = GifModel(
-        nonParsed.id,
-        GifProperties(
-            nonParsed.images!!.gifInfo!!.width,
-            nonParsed.images!!.gifInfo!!.height,
-            nonParsed.images!!.gifInfo!!.url,
-            nonParsed.images!!.gifInfo!!.size
-        ),
-        GifProperties(
-            nonParsed.images!!.previewGifInfo!!.width,
-            nonParsed.images!!.previewGifInfo!!.height,
-            nonParsed.images!!.previewGifInfo!!.url,
-            nonParsed.images!!.previewGifInfo!!.size
-        ),
-        nonParsed.user!!.name,
-        nonParsed.title,
-        nonParsed.importDateTime,
-        false
-    )
+    private val fromRow =
+        gifRepository.javaClass.getDeclaredMethod("fromRaw", GifNotParsedModel::class.java).apply {
+            isAccessible = true
+        }
 
     private fun initGifRepository() {
         giphyAPI = Mockito.mock(GiphyAPI::class.java)
         gifRepository = GifRepository("", giphyAPI)
+    }
+
+    @Test
+    fun fromRowNormal() {
+        initGifRepository()
+
+        val gifModel = fromRow.invoke(gifRepository, gifNonParsedModel1) as GifModel
+
+        assert(
+            gifModel == GifModel(
+                "id1",
+                GifProperties(300, 200, "ourl1", 100),
+                GifProperties(100, 70, "purl1", 30),
+                "name1",
+                "t1",
+                "d1",
+                false
+            )
+        )
+    }
+
+    @Test
+    fun fromRowInvalid() {
+        initGifRepository()
+
+        val gifModels = listOfNotNull(
+            fromRow.invoke(gifRepository, gifNonParsedModel1.copy(images = null)), //fatal
+            fromRow.invoke(
+                gifRepository, gifNonParsedModel1.copy( //fatal
+                    images = gifNonParsedModel1.images!!.copy(gifInfo = null)
+                )
+            ),
+            fromRow.invoke(
+                gifRepository,
+                gifNonParsedModel1.copy(user = null)
+            ), //non fatal (userName = "")
+            fromRow.invoke(
+                gifRepository, gifNonParsedModel1.copy( //non fatal (preview = original)
+                    images = gifNonParsedModel1.images!!.copy(previewGifInfo = null)
+                )
+            )
+        )
+        val gifModel = fromRow.invoke(gifRepository, gifNonParsedModel1) as GifModel
+
+        assert(
+            gifModels == listOf(
+                gifModel.copy(userName = ""),
+                gifModel.copy(preview = gifModel.original)
+            )
+        )
     }
 
     @Test
@@ -95,9 +130,9 @@ class GifRepositoryTest {
             val list = gifRepository.getTrendingGifs(10, 0)
             assert(
                 list == listOf(
-                    fromRequestToGifModel(gifNonParsedModel1),
-                    fromRequestToGifModel(gifNonParsedModel2),
-                    fromRequestToGifModel(gifNonParsedModel3)
+                    fromRow.invoke(gifRepository, gifNonParsedModel1),
+                    fromRow.invoke(gifRepository, gifNonParsedModel2),
+                    fromRow.invoke(gifRepository, gifNonParsedModel3)
                 )
             )
         }
@@ -151,7 +186,7 @@ class GifRepositoryTest {
         runBlocking {
             val list = gifRepository.getTrendingGifs(10, 0)
 
-            val gifModel = fromRequestToGifModel(gifNonParsedModel1)
+            val gifModel = fromRow.invoke(gifRepository, gifNonParsedModel1) as GifModel
 
             assert(
                 list == listOf(
@@ -210,16 +245,16 @@ class GifRepositoryTest {
             val list = gifRepository.getByTerm("term", 10, 0)
             assert(
                 list == listOf(
-                    fromRequestToGifModel(gifNonParsedModel1),
-                    fromRequestToGifModel(gifNonParsedModel2),
-                    fromRequestToGifModel(gifNonParsedModel3)
+                    fromRow.invoke(gifRepository, gifNonParsedModel1),
+                    fromRow.invoke(gifRepository, gifNonParsedModel2),
+                    fromRow.invoke(gifRepository, gifNonParsedModel3)
                 )
             )
         }
     }
 
     @Test
-    fun getByTermmpty() {
+    fun getByTermEmpty() {
         initGifRepository()
 
         Mockito.`when`(giphyAPI.findGifsByTerm("term", 10, 0, ""))
