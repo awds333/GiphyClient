@@ -15,9 +15,9 @@ import org.mockito.internal.verification.VerificationModeFactory.times
 import kotlin.text.Typography.times
 
 class RoomFavoriteManagerTest {
-    private var gifDao = Mockito.mock(GifDao::class.java)
-    private var publisher = ConflatedBroadcastChannel(emptyList<DbGif>())
-    private var roomFavoriteManager = RoomFavoriteManager(gifDao)
+    private lateinit var gifDao :GifDao
+    private lateinit var publisher : ConflatedBroadcastChannel<List<DbGif>>
+    private lateinit var roomFavoriteManager : RoomFavoriteManager
 
 
     private val dbGif1 = DbGif(
