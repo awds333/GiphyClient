@@ -18,8 +18,6 @@ class TrendingGifLoaderTest {
             }
         val result = buildRequest.invoke(loader, 4) as suspend () -> List<GifModel>
         runBlocking {
-            Mockito.verify(provider, Mockito.never()).getTrendingGifs(25, 4)
-
             result()
 
             Mockito.verify(provider, VerificationModeFactory.times(1)).getTrendingGifs(25, 4)

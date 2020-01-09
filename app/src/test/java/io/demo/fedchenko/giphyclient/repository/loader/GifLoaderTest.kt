@@ -26,14 +26,19 @@ class GifLoaderTest {
 
     @Test
     fun loadMoreSuccess() {
+        var count = 0
         val loader = object : GifLoader() {
             override fun buildRequest(offset: Int): suspend () -> List<GifModel>? {
+                assert(count == offset)
                 return { listOf(gifModel1, gifModel2) }
             }
         }
         runBlocking {
             val result = loader.loadMoreGifs()
             assert(result == listOf(gifModel1, gifModel2))
+
+            count += 2
+            loader.loadMoreGifs()
         }
     }
 
