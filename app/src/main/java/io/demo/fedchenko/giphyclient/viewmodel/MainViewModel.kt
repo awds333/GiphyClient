@@ -141,7 +141,6 @@ class MainViewModel(
         subscribeToLoader()
     }
 
-
     private fun subscribeToLoader() {
         isLoadingLiveData.value = false
         requestJob?.cancel()
