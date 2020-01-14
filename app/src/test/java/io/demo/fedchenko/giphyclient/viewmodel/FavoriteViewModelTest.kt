@@ -11,6 +11,7 @@ import io.demo.fedchenko.giphyclient.repository.FavoriteManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Rule
@@ -80,11 +81,13 @@ class FavoriteViewModelTest {
     @Test
     fun observeGifModels() {
         var list = emptyList<GifModel>()
-        var checks = 0
+        var step = 0
+        val mutex = Mutex(true)
 
         val observer = Observer<List<GifModel>> {
             assert(list == it)
-            checks++
+            step++
+            mutex.unlock()
         }
         val lifecycleOwner = mock(LifecycleOwner::class.java)
         val lifecycle = LifecycleRegistry(lifecycleOwner)
@@ -97,8 +100,8 @@ class FavoriteViewModelTest {
 
         publisher.offer(list)
         runBlocking {
-            delay(50)
+            mutex.lock()
         }
-        assert(checks == 2)
+        assert(step == 2)
     }
 }

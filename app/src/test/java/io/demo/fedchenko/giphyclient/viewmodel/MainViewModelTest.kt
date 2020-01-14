@@ -12,9 +12,9 @@ import io.demo.fedchenko.giphyclient.repository.GifProvider
 import io.demo.fedchenko.giphyclient.repository.TermsManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Rule
@@ -82,14 +82,19 @@ class MainViewModelTest {
                 .then { listOf(gifModel1) }
         }
         viewModel = MainViewModel(gifProvider, termsManager, favoriteManager)
+        val mutex = Mutex(true)
+        var step = 0
 
         val lifecycleOwner = createLifecycleOwner()
         viewModel.observeGifModels(lifecycleOwner, Observer {
             assert(it == listOf(gifModel1))
+            mutex.unlock()
+            step++
         })
         runBlocking {
-            delay(50)
+            mutex.lock()
         }
+        assert(step == 1)
     }
 
     @Test
@@ -103,54 +108,58 @@ class MainViewModelTest {
         viewModel = MainViewModel(gifProvider, termsManager, favoriteManager)
 
         val lifecycleOwner = createLifecycleOwner()
-        var count = 0
+        var step = 0
+        val mutex = Mutex(true)
 
         viewModel.observeGifModels(lifecycleOwner, Observer {
-            when (count) {
+            when (step) {
                 0 -> {
                     assert(it == listOf(gifModel1))
-                    count++
+                    step++
                 }
                 1 -> {
                     assert(it == emptyList<GifModel>())
-                    count++
+                    step++
                 }
                 2 -> {
                     assert(it == listOf(gifModel1, gifModel2))
-                    count++
+                    step++
+                    mutex.unlock()
                 }
             }
         })
         viewModel.searchText.value = "term"
         viewModel.search()
-        runBlocking {
-            delay(50)
-        }
-        assert(count == 3)
+
+        runBlocking { mutex.lock() }
+        assert(step == 3)
     }
 
     @Test
     fun exceptionListenerRegisterRemove() {
         runBlocking {
-            Mockito.`when`(gifProvider.getByTerm("term",50, 0))
+            Mockito.`when`(gifProvider.getByTerm("term", 50, 0))
                 .then { throw IOException() }
         }
         viewModel = MainViewModel(gifProvider, termsManager, favoriteManager)
 
-        var count = 0
-        val exceptionListener: () -> Unit = { count++ }
+        var step = 0
+        var mutex = Mutex(true)
+
+        val exceptionListener: () -> Unit = {
+            step++
+            mutex.unlock()
+        }
         viewModel.registerExceptionsListener(exceptionListener)
         viewModel.searchText.value = "term"
         viewModel.search()
 
-        runBlocking { delay(50) }
+        runBlocking { mutex.lock() }
 
         viewModel.removeExceptionListener()
         viewModel.refresh()
 
-        runBlocking { delay(50) }
-
-        assert(count == 1)
+        assert(step == 1)
     }
 
     @Test
@@ -171,33 +180,37 @@ class MainViewModelTest {
         }
         viewModel = MainViewModel(gifProvider, termsManager, favoriteManager)
 
-        var count = 0
+        var step = 0
+        val mutex = Mutex(true)
+
         viewModel.observeGifModels(createLifecycleOwner(), Observer {
-            when (count) {
+            when (step) {
                 0 -> {
                     assert(it == listOf(gifModel1, gifModel2))
-                    count++
+                    step++
                 }
                 1 -> {
                     assert(it == listOf(gifModel1, gifModel2, gifModel2, gifModel1))
-                    count++
+                    step++
+                    mutex.unlock()
                 }
                 2 -> {
                     assert(it == listOf(gifModel1, gifModel2, gifModel2, gifModel1, gifModel1))
-                    count++
+                    step++
+                    mutex.unlock()
                 }
             }
         })
         viewModel.onScroll(1)
         runBlocking {
-            delay(50)
+            mutex.lock()
 
-            assert(count == 2)
+            assert(step == 2)
             viewModel.onScroll(2)
 
-            delay(50)
+            mutex.lock()
 
-            assert(count == 3)
+            assert(step == 3)
         }
     }
 
@@ -211,31 +224,35 @@ class MainViewModelTest {
         }
         viewModel = MainViewModel(gifProvider, termsManager, favoriteManager)
 
-        var count = 0
+        var step = 0
+        val mutex = Mutex()
+
         viewModel.observeGifModels(createLifecycleOwner(), Observer {
-            when (count) {
+            when (step) {
                 0 -> {
                     assert(it == listOf(gifModel1, gifModel2))
-                    count++
+                    step++
+                    mutex.unlock()
                 }
                 1 -> {
                     assert(it == emptyList<GifModel>())
-                    count++
+                    step++
                 }
                 2 -> {
                     assert(it == listOf(gifModel1, gifModel2))
-                    count++
+                    step++
+                    mutex.unlock()
                 }
             }
         })
         runBlocking {
-            delay(50)
+            mutex.lock()
 
             viewModel.refresh()
 
-            delay(50)
+            mutex.lock()
         }
-        assert(count == 3)
+        assert(step == 3)
     }
 
     @Test
@@ -252,28 +269,32 @@ class MainViewModelTest {
         }
         viewModel = MainViewModel(gifProvider, termsManager, favoriteManager)
 
-        var count = 0
+        var step = 0
+        val mutex = Mutex(true)
+
         viewModel.observeGifModels(createLifecycleOwner(), Observer {
-            when (count) {
+            when (step) {
                 0 -> {
                     assert(it == listOf(gifModel1, gifModel2))
-                    count++
+                    step++
                 }
                 1 -> {
                     assert(it == emptyList<GifModel>())
-                    count++
+                    step++
                 }
                 2 -> {
-                    count++
+                    step++
                     assert(it == listOf(gifModel2))
+                    mutex.unlock()
                 }
                 3 -> {
                     assert(it == emptyList<GifModel>())
-                    count++
+                    step++
                 }
                 4 -> {
                     assert(it == listOf(gifModel1, gifModel2))
-                    count++
+                    step++
+                    mutex.unlock()
                 }
             }
         })
@@ -281,12 +302,12 @@ class MainViewModelTest {
         viewModel.search()
 
         runBlocking {
-            delay(50)
+            mutex.lock()
             viewModel.clean()
             assert(viewModel.searchText.value!!.isEmpty())
-            delay(50)
+            mutex.lock()
         }
-        assert(count == 5)
+        assert(step == 5)
     }
 
     @Test
@@ -303,8 +324,8 @@ class MainViewModelTest {
         }
         viewModel = MainViewModel(gifProvider, termsManager, favoriteManager)
 
-        var count = 0
-        val listener: () -> Unit = { count++ }
+        var step = 0
+        val listener: () -> Unit = { step++ }
 
         viewModel.registerKeyboardListener(listener)
         viewModel.searchText.value = "term"
@@ -315,6 +336,6 @@ class MainViewModelTest {
 
         viewModel.search()
 
-        assert(count == 1)
+        assert(step == 1)
     }
 }
