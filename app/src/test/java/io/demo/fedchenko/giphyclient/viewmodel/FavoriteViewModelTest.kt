@@ -100,7 +100,9 @@ class FavoriteViewModelTest {
 
         publisher.offer(list)
         runBlocking {
-            mutex.lock()
+            withTimeout(1000L) {
+                mutex.lock()
+            }
         }
         assert(step == 2)
     }

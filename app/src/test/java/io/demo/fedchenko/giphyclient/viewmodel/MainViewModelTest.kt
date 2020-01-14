@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withTimeout
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -92,7 +93,9 @@ class MainViewModelTest {
             step++
         })
         runBlocking {
-            mutex.lock()
+            withTimeout(1000L) {
+                mutex.lock()
+            }
         }
         assert(step == 1)
     }
@@ -131,7 +134,11 @@ class MainViewModelTest {
         viewModel.searchText.value = "term"
         viewModel.search()
 
-        runBlocking { mutex.lock() }
+        runBlocking {
+            withTimeout(1000L) {
+                mutex.lock()
+            }
+        }
         assert(step == 3)
     }
 
@@ -154,7 +161,11 @@ class MainViewModelTest {
         viewModel.searchText.value = "term"
         viewModel.search()
 
-        runBlocking { mutex.lock() }
+        runBlocking {
+            withTimeout(1000L) {
+                mutex.lock()
+            }
+        }
 
         viewModel.removeExceptionListener()
         viewModel.refresh()
@@ -203,14 +214,16 @@ class MainViewModelTest {
         })
         viewModel.onScroll(1)
         runBlocking {
-            mutex.lock()
+            withTimeout(1000L) {
+                mutex.lock()
 
-            assert(step == 2)
-            viewModel.onScroll(2)
+                assert(step == 2)
+                viewModel.onScroll(2)
 
-            mutex.lock()
+                mutex.lock()
 
-            assert(step == 3)
+                assert(step == 3)
+            }
         }
     }
 
@@ -225,7 +238,7 @@ class MainViewModelTest {
         viewModel = MainViewModel(gifProvider, termsManager, favoriteManager)
 
         var step = 0
-        val mutex = Mutex()
+        val mutex = Mutex(true)
 
         viewModel.observeGifModels(createLifecycleOwner(), Observer {
             when (step) {
@@ -246,13 +259,16 @@ class MainViewModelTest {
             }
         })
         runBlocking {
-            mutex.lock()
+            withTimeout(1000L) {
+                mutex.lock()
 
-            viewModel.refresh()
+                viewModel.refresh()
 
-            mutex.lock()
+                mutex.lock()
+
+                assert(step == 3)
+            }
         }
-        assert(step == 3)
     }
 
     @Test
@@ -302,10 +318,12 @@ class MainViewModelTest {
         viewModel.search()
 
         runBlocking {
-            mutex.lock()
-            viewModel.clean()
-            assert(viewModel.searchText.value!!.isEmpty())
-            mutex.lock()
+            withTimeout(1000L) {
+                mutex.lock()
+                viewModel.clean()
+                assert(viewModel.searchText.value!!.isEmpty())
+                mutex.lock()
+            }
         }
         assert(step == 5)
     }
