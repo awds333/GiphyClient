@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.room.Room
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import io.demo.fedchenko.giphyclient.ConnectivityLiveData
+import io.demo.fedchenko.giphyclient.okhttp.OkHttpFileDownloader
 import io.demo.fedchenko.giphyclient.repository.GifRepository
 import io.demo.fedchenko.giphyclient.repository.RoomFavoriteManager
 import io.demo.fedchenko.giphyclient.repository.RoomTermsManager
@@ -63,4 +64,6 @@ val repositoryModule: Module = module {
 
 val utilesModel: Module = module {
     single { (app: Application) -> ConnectivityLiveData(app) }
+
+    single { (context: Context) -> OkHttpFileDownloader(context) }
 }
