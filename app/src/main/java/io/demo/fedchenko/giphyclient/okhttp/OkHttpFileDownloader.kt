@@ -2,6 +2,8 @@ package io.demo.fedchenko.giphyclient.okhttp
 
 import android.content.Context
 import android.os.Environment.DIRECTORY_PICTURES
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import ru.gildor.coroutines.okhttp.await
@@ -20,10 +22,12 @@ class OkHttpFileDownloader(val context: Context) : FileDownloader {
                 path.mkdirs()
 
             val file = File(path, "temp.gif")
-            file.createNewFile()
-            file.writeBytes(result.body()?.bytes() ?: throw IOException("Response body is empty"))
+            withContext(Dispatchers.IO){
+                file.createNewFile()
+                file.writeBytes(result.body()?.bytes() ?: throw IOException("Response body is empty"))
+            }
             return file
         } else
-            throw IOException("Failed to download gif")
+            throw IOException("Failed to download file")
     }
 }

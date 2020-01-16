@@ -100,7 +100,7 @@ class GifViewActivity : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(
             this,
-            io.demo.fedchenko.giphyclient.R.layout.activity_gif_view
+            R.layout.activity_gif_view
         )
 
         binding.apply {
