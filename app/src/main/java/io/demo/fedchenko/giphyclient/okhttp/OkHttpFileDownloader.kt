@@ -1,14 +1,15 @@
 package io.demo.fedchenko.giphyclient.okhttp
 
 import android.content.Context
-import android.os.Environment.DIRECTORY_PICTURES
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import ru.gildor.coroutines.okhttp.await
 import java.io.File
 import java.io.IOException
+import kotlin.coroutines.coroutineContext
 
 class OkHttpFileDownloader(val context: Context) : FileDownloader {
     private val client = OkHttpClient.Builder().build()

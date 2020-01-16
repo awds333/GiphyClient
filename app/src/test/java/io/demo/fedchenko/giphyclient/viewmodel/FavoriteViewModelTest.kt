@@ -99,11 +99,16 @@ class FavoriteViewModelTest {
         list = listOf(gifModel1, gifModel2)
 
         publisher.offer(list)
+
+        mutex.lockLounch()
+        assert(step == 2)
+    }
+
+    private fun Mutex.lockLounch() {
         runBlocking {
             withTimeout(1000L) {
-                mutex.lock()
+                lock()
             }
         }
-        assert(step == 2)
     }
 }
