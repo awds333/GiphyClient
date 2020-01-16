@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
 
         <variable
             name="gifModel"
@@ -30,6 +31,10 @@
             name="placeHolder"
             type="android.graphics.drawable.Drawable" />
 
+        <variable
+            name="isShareLoading"
+            type="Boolean" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,13 +42,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#80000000"
+        android:clickable="true"
+        android:onClick="@{onBackgroundClick}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:clickable="true"
-        android:onClick="@{onBackgroundClick}">
-
+        app:layout_constraintTop_toTopOf="parent">
 
         <include
             android:id="@+id/gifImageViewInclude"
@@ -51,14 +55,17 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="8dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
             app:customUrl="@{areButtonsVisible ? gifModel.original.url : null}"
-            app:placeHolder="@{placeHolder}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:ratioSize="@{gifModel.original}"/>
-
+            app:placeHolder="@{placeHolder}"
+            app:ratioSize="@{gifModel.original}" />
 
         <TextView
             android:id="@+id/userNameView"
@@ -81,23 +88,40 @@
             android:id="@+id/gifInfoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
             android:onClick="@{onInfoClick}"
+            android:padding="8dp"
             android:visibility="@{areButtonsVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="@+id/gifImageViewInclude"
             app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude"
             app:srcCompat="@android:drawable/ic_menu_manage" />
 
-        <ImageView
-            android:id="@+id/imageButton2"
+        <LinearLayout
+            android:id="@+id/linearLayout2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:onClick="@{onShareClick}"
-            android:visibility="@{areButtonsVisible ? View.VISIBLE : View.GONE}"
+            android:orientation="vertical"
             app:layout_constraintStart_toStartOf="@+id/gifImageViewInclude"
-            app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude"
-            app:srcCompat="@android:drawable/ic_menu_share" />
+            app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude">
+
+            <ImageView
+                android:id="@+id/imageButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="@{!isShareLoading}"
+                android:onClick="@{onShareClick}"
+                android:padding="8dp"
+                android:visibility="@{areButtonsVisible ? View.VISIBLE : View.GONE}"
+                app:srcCompat="@android:drawable/ic_menu_share" />
+
+            <ProgressBar
+                android:id="@+id/progressBar2"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{isShareLoading ? View.VISIBLE : View.GONE}"
+                tools:visibility="visible" />
+        </LinearLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

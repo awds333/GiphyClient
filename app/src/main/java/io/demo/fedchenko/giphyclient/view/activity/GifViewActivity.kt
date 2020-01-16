@@ -2,14 +2,18 @@ package io.demo.fedchenko.giphyclient.view.activity
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.transition.Transition
 import android.transition.TransitionListenerAdapter
+import android.view.Gravity
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -27,10 +31,7 @@ import io.demo.fedchenko.giphyclient.okhttp.OkHttpFileDownloader
 import io.demo.fedchenko.giphyclient.view.dialog.GifInfoDialogFragment
 import kotlinx.android.synthetic.main.activity_gif_view.*
 import kotlinx.android.synthetic.main.gif_image_view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import java.io.IOException
@@ -105,15 +106,18 @@ class GifViewActivity : AppCompatActivity() {
 
         binding.apply {
             onShareClick = View.OnClickListener {
-                if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    shareGif()
-                } else {
-                    ActivityCompat.requestPermissions(
-                        this@GifViewActivity,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        REQUEST_CODE
-                    )
+                val dialogBuilder = AlertDialog.Builder(this@GifViewActivity)
+                dialogBuilder.setItems(R.array.share_options) { _, which ->
+                    when (which) {
+                        0 -> {//url
+                            shareUrl()
+                        }
+                        1 -> {//gif
+                            checkPermissionFileShare()
+                        }
+                    }
                 }
+                dialogBuilder.show()
             }
 
             binding.placeHolder = bitmap?.toDrawable(resources)
@@ -136,8 +140,21 @@ class GifViewActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkPermissionFileShare() {
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            shareGif()
+        } else {
+            ActivityCompat.requestPermissions(
+                this@GifViewActivity,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                REQUEST_CODE
+            )
+        }
+    }
+
     private fun shareGif() {
         scope.launch {
+            binding.isShareLoading = true
             try {
                 val file = fileDownloader.getFile(model.original.url)
                 ShareCompat.IntentBuilder.from(this@GifViewActivity)
@@ -155,6 +172,23 @@ class GifViewActivity : AppCompatActivity() {
                 Toast.makeText(this@GifViewActivity, R.string.request_failed, Toast.LENGTH_LONG)
                     .show()
             }
+            delay(1000L)
+            binding.isShareLoading = false
+        }
+    }
+
+    private fun shareUrl() {
+        scope.launch {
+            binding.isShareLoading = true
+
+            ShareCompat.IntentBuilder.from(this@GifViewActivity)
+                .setChooserTitle(R.string.share_gif)
+                .setType("plain/text")
+                .setText(model.original.url)
+                .startChooser()
+
+            delay(1000L)
+            binding.isShareLoading = false
         }
     }
 

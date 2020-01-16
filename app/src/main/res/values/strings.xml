@@ -12,4 +12,9 @@
     <string name="search">Search</string>
     <string name="trending">Trending</string>
     <string name="share_gif">Share gif</string>
+
+    <array name="share_options">
+        <item>Share url</item>
+        <item>Share gif</item>
+    </array>
 </resources>
