@@ -100,13 +100,13 @@ class FavoriteViewModelTest {
 
         publisher.offer(list)
 
-        mutex.lockLounch()
+        mutex.lockLaunch()
         assert(step == 2)
     }
 
-    private fun Mutex.lockLounch() {
+    private fun Mutex.lockLaunch(timeOut: Long = 1000L) {
         runBlocking {
-            withTimeout(1000L) {
+            withTimeout(timeOut) {
                 lock()
             }
         }

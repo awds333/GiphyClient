@@ -92,7 +92,7 @@ class MainViewModelTest {
             mutex.unlock()
             step++
         })
-        mutex.lockLounch()
+        mutex.lockLaunch()
         assert(step == 1)
     }
 
@@ -130,7 +130,7 @@ class MainViewModelTest {
         viewModel.searchText.value = "term"
         viewModel.search()
 
-        mutex.lockLounch()
+        mutex.lockLaunch()
         assert(step == 3)
     }
 
@@ -153,7 +153,7 @@ class MainViewModelTest {
         viewModel.searchText.value = "term"
         viewModel.search()
 
-        mutex.lockLounch()
+        mutex.lockLaunch()
 
         viewModel.removeExceptionListener()
         viewModel.refresh()
@@ -202,12 +202,12 @@ class MainViewModelTest {
         })
         viewModel.onScroll(1)
 
-        mutex.lockLounch()
+        mutex.lockLaunch()
         assert(step == 2)
 
         viewModel.onScroll(2)
 
-        mutex.lockLounch()
+        mutex.lockLaunch()
         assert(step == 3)
     }
 
@@ -244,10 +244,10 @@ class MainViewModelTest {
         })
 
 
-        mutex.lockLounch()
+        mutex.lockLaunch()
         viewModel.refresh()
 
-        mutex.lockLounch()
+        mutex.lockLaunch()
         assert(step == 3)
     }
 
@@ -297,11 +297,11 @@ class MainViewModelTest {
         viewModel.searchText.value = "term"
         viewModel.search()
 
-        mutex.lockLounch()
+        mutex.lockLaunch()
         viewModel.clean()
         assert(viewModel.searchText.value!!.isEmpty())
 
-        mutex.lockLounch()
+        mutex.lockLaunch()
         assert(step == 5)
     }
 
@@ -334,9 +334,9 @@ class MainViewModelTest {
         assert(step == 1)
     }
 
-    private fun Mutex.lockLounch() {
+    private fun Mutex.lockLaunch(timeOut: Long = 1000L) {
         runBlocking {
-            withTimeout(1000L) {
+            withTimeout(timeOut) {
                 lock()
             }
         }
