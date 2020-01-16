@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.transition.Transition
 import android.transition.TransitionListenerAdapter
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ShareCompat
@@ -18,6 +19,7 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
+import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.databinding.ActivityGifViewBinding
 import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.okhttp.FileDownloader
@@ -65,8 +67,9 @@ class GifViewActivity : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-            shareGif()
+        if (requestCode == REQUEST_CODE)
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+                shareGif()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,7 +141,7 @@ class GifViewActivity : AppCompatActivity() {
             try {
                 val file = fileDownloader.getFile(model.original.url)
                 ShareCompat.IntentBuilder.from(this@GifViewActivity)
-                    .setChooserTitle("Share Gif")
+                    .setChooserTitle(R.string.share_gif)
                     .setType("image/gif")
                     .setStream(
                         FileProvider.getUriForFile(
@@ -149,7 +152,8 @@ class GifViewActivity : AppCompatActivity() {
                     )
                     .startChooser()
             } catch (e: IOException) {
-                e.printStackTrace()
+                Toast.makeText(this@GifViewActivity, R.string.request_failed, Toast.LENGTH_LONG)
+                    .show()
             }
         }
     }

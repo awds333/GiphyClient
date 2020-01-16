@@ -65,5 +65,5 @@ val repositoryModule: Module = module {
 val utilesModel: Module = module {
     single { (app: Application) -> ConnectivityLiveData(app) }
 
-    single { (context: Context) -> OkHttpFileDownloader(context) }
+    factory { (context: Context) -> OkHttpFileDownloader(context) }
 }

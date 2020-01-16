@@ -19,11 +19,11 @@ class OkHttpFileDownloader(val context: Context) : FileDownloader {
             if (!path.isDirectory)
                 path.mkdirs()
 
-            val file = File(path, "test.gif")
+            val file = File(path, "temp.gif")
             file.createNewFile()
-            file.writeBytes(result.body()?.bytes() ?: throw IOException())
+            file.writeBytes(result.body()?.bytes() ?: throw IOException("Response body is empty"))
             return file
         } else
-            throw IOException()
+            throw IOException("Failed to download gif")
     }
 }
