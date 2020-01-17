@@ -22,6 +22,7 @@ import androidx.core.app.SharedElementCallback
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import io.demo.fedchenko.giphyclient.R
 import io.demo.fedchenko.giphyclient.databinding.ActivityGifViewBinding
@@ -29,10 +30,12 @@ import io.demo.fedchenko.giphyclient.model.GifModel
 import io.demo.fedchenko.giphyclient.okhttp.FileDownloader
 import io.demo.fedchenko.giphyclient.okhttp.OkHttpFileDownloader
 import io.demo.fedchenko.giphyclient.view.dialog.GifInfoDialogFragment
+import io.demo.fedchenko.giphyclient.viewmodel.FavoriteViewModel
 import kotlinx.android.synthetic.main.activity_gif_view.*
 import kotlinx.android.synthetic.main.gif_image_view.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.io.IOException
 
@@ -40,6 +43,8 @@ import java.io.IOException
 class GifViewActivity : AppCompatActivity() {
     private lateinit var model: GifModel
     private lateinit var binding: ActivityGifViewBinding
+
+    private val favoriteViewModel: FavoriteViewModel by viewModel { parametersOf(this) }
 
     private val fileDownloader by inject<OkHttpFileDownloader> { parametersOf(this) }
 
@@ -137,7 +142,15 @@ class GifViewActivity : AppCompatActivity() {
             onBackgroundClick = View.OnClickListener {
                 onBackPressed()
             }
+
+            favoriteClickListener = View.OnClickListener {
+                favoriteViewModel.changeFavorite(model)
+            }
         }
+
+        favoriteViewModel.observeGifModels(this, Observer {
+            binding.isFavorite = it.map { model -> model.id }.contains(model.id)
+        })
     }
 
     private fun checkPermissionFileShare() {
@@ -154,7 +167,7 @@ class GifViewActivity : AppCompatActivity() {
 
     private fun shareGif() {
         scope.launch {
-            binding.isShareLoading = true
+            binding.isShareProgressVisible = true
             try {
                 val file = fileDownloader.getFile(model.original.url)
                 ShareCompat.IntentBuilder.from(this@GifViewActivity)
@@ -173,13 +186,13 @@ class GifViewActivity : AppCompatActivity() {
                     .show()
             }
             delay(1000L)
-            binding.isShareLoading = false
+            binding.isShareProgressVisible = false
         }
     }
 
     private fun shareUrl() {
         scope.launch {
-            binding.isShareLoading = true
+            binding.isShareProgressVisible = true
 
             ShareCompat.IntentBuilder.from(this@GifViewActivity)
                 .setChooserTitle(R.string.share_gif)
@@ -188,7 +201,7 @@ class GifViewActivity : AppCompatActivity() {
                 .startChooser()
 
             delay(1000L)
-            binding.isShareLoading = false
+            binding.isShareProgressVisible = false
         }
     }
 

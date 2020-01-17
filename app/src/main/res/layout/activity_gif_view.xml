@@ -32,8 +32,16 @@
             type="android.graphics.drawable.Drawable" />
 
         <variable
-            name="isShareLoading"
+            name="isShareProgressVisible"
             type="Boolean" />
+
+        <variable
+            name="isFavorite"
+            type="Boolean" />
+
+        <variable
+            name="favoriteClickListener"
+            type="android.view.View.OnClickListener" />
 
     </data>
 
@@ -95,7 +103,7 @@
             app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude"
             app:srcCompat="@android:drawable/ic_menu_manage" />
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/linearLayout2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -107,10 +115,10 @@
                 android:id="@+id/imageButton2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="@{!isShareLoading}"
+                android:clickable="@{!isShareProgressVisible}"
                 android:onClick="@{onShareClick}"
                 android:padding="8dp"
-                android:visibility="@{areButtonsVisible ? View.VISIBLE : View.GONE}"
+                android:visibility="@{areButtonsVisible &amp; !isShareProgressVisible ? View.VISIBLE : View.GONE}"
                 app:srcCompat="@android:drawable/ic_menu_share" />
 
             <ProgressBar
@@ -118,10 +126,22 @@
                 style="?android:attr/progressBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="@{isShareLoading ? View.VISIBLE : View.GONE}"
+                android:visibility="@{isShareProgressVisible ? View.VISIBLE : View.GONE}"
                 tools:visibility="visible" />
-        </LinearLayout>
+        </FrameLayout>
 
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:visibility="@{areButtonsVisible ? View.VISIBLE : View.GONE}"
+            android:clickable="true"
+            android:onClick="@{favoriteClickListener}"
+            app:layout_constraintEnd_toStartOf="@+id/gifInfoButton"
+            app:layout_constraintTop_toTopOf="@+id/gifImageViewInclude"
+            app:src="@{isFavorite ? @android:drawable/btn_star_big_on : @android:drawable/btn_star_big_off}"
+            tools:srcCompat="@android:drawable/btn_star_big_on" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
